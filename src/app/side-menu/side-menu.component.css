@@ -1,0 +1,23 @@
+.side-menu-container {
+    width: 15vw;
+    padding: 16px 0 16px 0;
+    background-color: var(--container);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.side-menu-item {
+    padding: 16px;
+    border: none;
+    background: transparent;
+    
+}
+
+.side-menu-item:hover {
+    background-color: var(--active);
+}
+
+/* .side-menu-item:active {
+    background-color: var(--active);
+} */

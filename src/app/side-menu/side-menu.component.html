@@ -1,0 +1,7 @@
+<div class="side-menu-container">
+    <button *ngFor="let item of sideMenuItems"
+        [routerLink]="item.path" 
+        class="side-menu-item">
+        {{ item.title }}
+    </button>
+</div>

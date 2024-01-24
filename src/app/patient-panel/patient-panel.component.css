@@ -1,0 +1,6 @@
+.add-button {
+    background-color: var(--active); 
+    color: black; 
+    border: none;
+    margin: 16px 16px 0 16px;
+}

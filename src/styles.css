@@ -1,0 +1,66 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+@import "~@ng-select/ng-select/themes/material.theme.css";  
+
+:root{
+    --main-title: #6b6968;
+    --container:  #f2f2f2;
+    --active: #a5ccba;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.title{
+    padding: 24px;
+    font-size: 24px;
+    color: var(--main-title);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 24px
+}
+
+th,
+td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: var(--container);
+}
+
+.control-buttons-container {
+    display: flex;
+    gap: 8px;
+}
+
+.control-button {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.control-button:hover{
+    background-color: var(--active);
+}
+
+.icon-img{
+    width: 17px;
+}
+
+.margin-8 {
+    margin: 8px;
+}
+
+.card {
+    padding: 16px;
+    border-color: var(--container);
+    border-radius: 10px;
+}

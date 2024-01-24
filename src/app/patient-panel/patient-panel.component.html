@@ -1,0 +1,32 @@
+<div style="width: 100%">
+    <div class="title">Patients</div>
+    <button (click)="onAdd()" type="button" class="btn btn-secondary add-button">
+        Add
+    </button>
+    <table>
+        <thead>
+            <tr>
+                <th *ngFor="let column of tableColumns">{{ column }}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let patient of patients">
+                <td> {{patient.identityNumber}} </td>
+                <td> {{patient.name}} </td>
+                <td> {{patient.birthDate | date}} </td>
+                <td> {{patient.address}} </td>
+                <td>
+                    <div class="control-buttons-container">
+                        <button (click)="onEdit(patient.id!, patient)" class="control-button">
+                            <img class="icon-img" src="..\assets\icons\edit.svg"/>
+                        </button>
+                        <button (click)="onDelete(patient.id!, patient)" class="control-button">
+                            <img class="icon-img" src="..\assets\icons\trash.svg"/>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

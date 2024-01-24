@@ -1,0 +1,71 @@
+<div>
+    <div class="title">System Lookups</div>
+    <button (click)="onLookupAdd()" type="button" class="btn btn-secondary add-button">
+        Add
+    </button>
+
+    <div class="main-container">
+
+        <table>
+                <thead>
+                    <tr>
+                        <th *ngFor="let column of tableColumns">{{ column }}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let lookup of lookups">
+                        <td> {{lookup?.name}} </td>
+                        <td> {{lookup.category?.title}} </td>
+                        <td>
+                            <div class="control-buttons-container">
+                                <button (click)="onLookupEdit(lookup.id!, lookup)" class="control-button">
+                                    <img class="icon-img" src="..\assets\icons\edit.svg"/>
+                                </button>
+                                <button (click)="onLookupDelete(lookup.id!, lookup)" class="control-button">
+                                    <img class="icon-img" src="..\assets\icons\trash.svg"/>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+        </table>
+
+        <div class="categories-container">
+            <div class="title">Categories</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr  *ngFor="let category of categories">
+                            <td>{{category.title}}</td>
+                            <td>{{category.code}}</td>
+                            <div class="control-buttons-container">
+                                <button (click)="onEditCategory(category)" class="control-button">
+                                    <img class="icon-img" src="..\assets\icons\edit.svg"/>
+                                </button>
+                                <button (click)="deleteCategory(category)" class="control-button">
+                                    <img class="icon-img" src="..\assets\icons\trash.svg"/>
+                                </button>
+                            </div>
+                        </tr>
+                    </tbody>
+                </table>
+            <div (click)="isAddCategory = true;" class="btn btn-secondary add-button">Add</div> 
+            <div  *ngIf="isAddCategory" style="display: flex; flex-direction: column; gap: 10px; padding: 10px;">
+                <span>Title</span>
+                <input type="text" class="card" style="background-color: var(--container);" [(ngModel)]="newCategory.title"> 
+                <span>Code</span>
+                <input type="text" class="card" style="background-color: var(--container);" [(ngModel)]="newCategory.code"> 
+                <button (click)="checkIfCategoryExist()" class="btn">Ok</button>
+                <small *ngIf="isWarning" style="color: red;">Code exist or invalid.</small>
+            </div>
+
+        </div>
+</div>
+
+</div>

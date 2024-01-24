@@ -1,0 +1,63 @@
+<div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">{{ isAdd ? 'Add' : 'Edit' }} Doctor</h5>
+    </div>
+
+    <div class="modal-body">
+        <form>
+          <div class="form" style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="form-group"> 
+                <label for="doctorName">Name</label>
+                <input [value]="doctor.name" (change)="onNameChange($event)" class="form-control" name="doctorName" id="doctorName" type="text">
+            </div>
+            <div class="form-group">
+                <label for="specification">Specification</label>
+                 <select class="form-control" name="specification" id="specification" [(ngModel)]="doctor.specificationId">
+                  <option [value]="undefined" hidden selected>Select Specification</option>
+                  <option *ngFor="let specification of specifications" [value]="specification.id">
+                    {{specification.name}}
+                  </option>
+                 </select>
+              </div>
+              
+              
+              <div class="form-group">
+                <label for="location">Location</label>
+                 <select class="form-control" name="location" id="location" [(ngModel)]="doctor.locationId">
+                  <option [value]="undefined" hidden selected>Select Location</option>
+                  <option *ngFor="let location of locations" [value]="location.id">
+                    {{location.name}}
+                  </option>
+                 </select>
+              </div>
+            
+            <div class="form-group">
+              <label for="fromTime">From Time</label>
+              <input
+                id="fromTime"
+                name="fromTime"
+                class="form-control"
+                type="time"
+                [(ngModel)]="fromTime"
+              />
+          </div>
+
+          <div class="form-group">
+            <label for="toTime">To Time</label>
+            <input
+              id="toTime"
+              name="toTime"
+              class="form-control"
+              type="time"
+              [(ngModel)]="toTime"
+            />
+        </div>
+      </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+      <button (click)="close()" type="button" class="btn btn-secondary"> Close </button>
+      <button (click)="OnSave()" type="button" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
+    </div>
+  </div>
