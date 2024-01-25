@@ -17,7 +17,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button (click)="close()" class="btn btn-secondary"> Close </button>
+            <button (click)="close()" type="button" class="btn btn-secondary"> Close </button>
             <button type="submit" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
             <small *ngIf="isWarning" style="color: red;">Code exist or invalid.</small>
           </div>

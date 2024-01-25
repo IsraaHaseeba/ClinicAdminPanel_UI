@@ -11,11 +11,11 @@ import { Appointment } from '../models/Appointment';
 export class AppointmentService {
   constructor(private httpClient: HttpClient) {}
 
-  getAllAppoinments(): Observable<Object> {
+  searchAllAppoinments(): Observable<Object> {
     return this.httpClient.get(url + Models.Appointments + AppointmentEndpoint.getAll);
   }
 
-  getAppoinmentById(id: number): Observable<Object> {
+  searchAppoinmentById(id: number): Observable<Object> {
     return this.httpClient.get(url + Models.Appointments + AppointmentEndpoint.getById, {
       params: {
         id: id
@@ -30,5 +30,11 @@ export class AppointmentService {
     return this.httpClient.post(url + Models.Appointments + AppointmentEndpoint.addUpdate, appoinment, {
       params: params
     });
+  }
+
+  deleteAppointment(id: number) {
+    return this.httpClient.delete(url + Models.Appointments + AppointmentEndpoint.delete, {
+      params: {id: id}
+    })
   }
 }

@@ -13,16 +13,16 @@
         <tbody>
             <tr *ngFor="let doctor of doctors">
                 <td> {{doctor.name}} </td>
-                <td> {{doctor.specification?.name}} </td>
-                <td> {{doctor.location?.name}} </td>
+                <td> {{doctor.specificationName}} </td>
+                <td> {{doctor.locationName}} </td>
                 <td> {{doctor.fromWorkingHour | date:'shortTime'}} </td>
                 <td> {{doctor.toWorkingHour | date:'shortTime'}} </td>
                 <td>
                     <div class="control-buttons-container">
-                        <button (click)="onEdit(doctor.id!, doctor)" class="control-button">
+                        <button (click)="onEdit(doctor.id!)" class="control-button">
                             <img class="icon-img" src="..\assets\icons\edit.svg"/>
                         </button>
-                        <button (click)="onDelete(doctor.id!, doctor)" class="control-button">
+                        <button (click)="onDelete(doctor.id!)" class="control-button">
                             <img class="icon-img" src="..\assets\icons\trash.svg"/>
                         </button>
                     </div>

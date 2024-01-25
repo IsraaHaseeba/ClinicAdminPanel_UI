@@ -20,28 +20,30 @@ export class LookupsPanelComponent {
   newCategory: Category = {};
   isAddCategory: boolean = false;
   isWarning: boolean = false;
-
+  selectedCategory: Category =  {};
+  
   ngOnInit(): void {
-    this.getLookups();
-    this.getCategories();
+    this.searchCategories();
   }
 
-  getLookups() {
-    this.lookupService.getAllLookups().subscribe(lookups => {
-      this.lookups = lookups as Lookup[] ?? [];
-    })
+  searchLookups() {
+    if(this.selectedCategory)
+      this.lookupService.searchLookupsByCategory(this.selectedCategory.id!).subscribe(lookups => {
+        this.lookups = lookups as Lookup[] ?? [];
+      })
   }
 
-  getCategories() {
-    this.categoryService.getAllCategories().subscribe(categories => {
+  searchCategories() {
+    this.categoryService.searchAllCategories().subscribe(categories => {
       this.categories = categories as Category[];
     })
   }
 
-  deleteCategory(category: Category) {
-    category.isDeleted = true;
-    this.categoryService.addUpdateCategory(category, category.id).subscribe(res => {
-      this.getCategories();
+  deleteCategory(ev: Event, id: number){
+    ev.stopPropagation();
+    this.categoryService.deleteCategory(id).subscribe(res => {
+      this.searchCategories();
+      this.selectedCategory = {};
     });
   }
 
@@ -49,13 +51,14 @@ export class LookupsPanelComponent {
     this.categoryService.addUpdateCategory(this.newCategory).subscribe(res => {
       this.isAddCategory = false;
       this.newCategory = {};
-      this.getCategories();
+      this.searchCategories();
     })
   }
 
-  onLookupDelete(id: number, lookup: Lookup){
-    lookup.isDeleted = true;
-    this.addUpdateLookup(lookup, id);
+  onLookupDelete(id: number){
+    this.lookupService.deleteLookup(id).subscribe(res => {
+      this.searchLookups();
+    });
   }
 
   checkIfCategoryExist(){
@@ -71,30 +74,29 @@ export class LookupsPanelComponent {
     else this.isWarning = true;
   }
 
-  onEditCategory(category?: Category) {
+  onEditCategory(ev: Event, category?: Category) {
+    ev.stopPropagation();
     if(category) {
       const modalRef = this.modalService.open(CategoryAddEditFormComponent);
       modalRef.componentInstance.id = category.id;
-      modalRef.componentInstance.category = {...category};
       modalRef.componentInstance.categoryEmitter.subscribe((res: any) => {
         this.updateCategory(res, res?.id);
       })
     }
   } 
 
-  updateCategory(category?: Category, id?: number) {
+  updateCategory(ev: Event, category?: Category, id?: number) {
     if(category) {
       this.categoryService.addUpdateCategory(category, id).subscribe((res => {
-            this.getCategories();
-            this.getLookups();
+            this.searchCategories();
+            this.searchLookups();
       }))
     }
   }
 
-  onLookupEdit(id: number, lookup: Lookup){
+  onLookupEdit(id: number){
     const modalRef = this.modalService.open(LookupsAddEditFormComponent);
 		modalRef.componentInstance.id = id;
-		modalRef.componentInstance.lookup = {...lookup};
     modalRef.componentInstance.categories = this.categories;
     modalRef.componentInstance.lookupEmitter.subscribe((res: any) => {
       this.addUpdateLookup(res, res.id);
@@ -104,14 +106,19 @@ export class LookupsPanelComponent {
   onLookupAdd() {
     const modalRef = this.modalService.open(LookupsAddEditFormComponent);
     modalRef.componentInstance.categories = this.categories;
+    modalRef.componentInstance.categoryId = this.selectedCategory.id;
     modalRef.componentInstance.lookupEmitter.subscribe((res: any) => {
       this.addUpdateLookup(res, undefined);
       })
   }
 
+  onCategorySelect(category: Category) {
+    this.selectedCategory = category;
+  }
+
   addUpdateLookup(lookup: Lookup, id?: number){
     this.lookupService.addUpdateLookup(lookup, id).subscribe(res => {
-      this.getLookups();
+      if(this.selectedCategory.id) this.searchLookups();
     });
   }
 }

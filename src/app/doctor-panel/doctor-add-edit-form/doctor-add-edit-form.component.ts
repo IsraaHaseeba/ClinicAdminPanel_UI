@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Doctor } from 'src/app/api/models/Doctor';
 import { CategoryService } from 'src/app/api/services/category.service';
+import { DoctorService } from 'src/app/api/services/doctor.service';
 
 @Component({
   selector: 'app-doctor-add-edit-form',
@@ -9,7 +10,7 @@ import { CategoryService } from 'src/app/api/services/category.service';
   styleUrls: ['./doctor-add-edit-form.component.css']
 })
 export class DoctorAddEditFormComponent {
-  @Input() doctor: Doctor = {};
+  doctor: Doctor = {};
   @Input() id?: number;
   @Output() doctorEmitter: EventEmitter<Doctor> = new EventEmitter<Doctor>();
   isAdd: boolean = false;
@@ -20,22 +21,29 @@ export class DoctorAddEditFormComponent {
 
 
   constructor(
-    private activeModal: NgbActiveModal, private categoryService: CategoryService
+    private activeModal: NgbActiveModal, private categoryService: CategoryService, private doctorService: DoctorService
   ) {}
 
   ngOnInit() {
     if(!this.id && JSON.stringify(this.doctor) == '{}') this.isAdd = true;
     else {
-      if(this.doctor.fromWorkingHour) this.fromTime = this.dateToTime(this.doctor.fromWorkingHour); 
-        if(this.doctor.toWorkingHour) this.toTime = this.dateToTime(this.doctor.toWorkingHour); 
+      this.searchDoctor();
     }
 
-    this.getLookups('123d').subscribe(res => this.specifications = res ?? []);
-    this.getLookups('122').subscribe(res => this.locations = res ?? []);
+    this.searchLookups('123d').subscribe(res => this.specifications = res ?? []);
+    this.searchLookups('122').subscribe(res => this.locations = res ?? []);
   }
  
-  getLookups(code: string) {
-    return this.categoryService.getByCode(code);
+  searchDoctor(){
+    this.doctorService.searchDoctorById(this.id!).subscribe(res => {
+      this.doctor = res;
+      if(this.doctor.fromWorkingHour) this.fromTime = this.dateToTime(this.doctor.fromWorkingHour); 
+      if(this.doctor.toWorkingHour) this.toTime = this.dateToTime(this.doctor.toWorkingHour); 
+    })
+  }
+
+  searchLookups(code: string) {
+    return this.categoryService.searchByCode(code);
   }
 
   OnSave() {
@@ -47,7 +55,7 @@ export class DoctorAddEditFormComponent {
   }
 
   onNameChange(ev: any) {
-    this.doctor.name = ev.target.value;
+    this.doctor.name = ev.tarsearch.value;
   }
 
   dateToTime(dateInput: any) {

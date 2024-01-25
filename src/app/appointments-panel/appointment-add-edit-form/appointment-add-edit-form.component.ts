@@ -12,6 +12,7 @@ import {
 import { Appointment } from 'src/app/api/models/Appointment';
 import { Doctor } from 'src/app/api/models/Doctor';
 import { Patient } from 'src/app/api/models/Patient';
+import { AppointmentService } from 'src/app/api/services/appointment.service';
 import { DoctorService } from 'src/app/api/services/doctor.service';
 import { PatientService } from 'src/app/api/services/patient.service';
 
@@ -21,7 +22,7 @@ import { PatientService } from 'src/app/api/services/patient.service';
   styleUrls: ['./appointment-add-edit-form.component.css'],
 })
 export class AppointmentAddEditFormComponent implements OnInit {
-  @Input() appointment: Appointment = {};
+  appointment: Appointment = {};
   @Input() id?: number;
   @Output() appointmentEmmitter: EventEmitter<Appointment> = new EventEmitter<Appointment>();
   doctors: Doctor[] = [];
@@ -31,23 +32,31 @@ export class AppointmentAddEditFormComponent implements OnInit {
   constructor(
     private doctorService: DoctorService,
     private patientService: PatientService,
-    private activeModal: NgbActiveModal
+    private activeModal: NgbActiveModal,
+    private appointmentService: AppointmentService
   ) {}
 
   ngOnInit() {
-    if(!this.id && JSON.stringify(this.appointment) == '{}') this.isAdd = true;
-    this.getDoctors();
-    this.getPatients();
+    if(!this.id) this.isAdd = true;
+    else this.searchAppointment();
+    this.searchDoctors();
+    this.searchPatients();
   }
 
-  getDoctors() {
-    this.doctorService.getAllDoctors().subscribe((doctors) => {
+  searchAppointment() {
+    this.appointmentService.searchAppoinmentById(this.id!).subscribe(res => {
+      this.appointment = res;
+    })
+  }
+
+  searchDoctors() {
+    this.doctorService.searchAllDoctors().subscribe((doctors) => {
       this.doctors = (doctors as Doctor[]) ?? [];
     });
   }
 
-  getPatients() {
-    this.patientService.getAllPatients().subscribe((patients) => {
+  searchPatients() {
+    this.patientService.searchAllPatients().subscribe((patients) => {
       this.patients = (patients as Patient[]) ?? [];
     });
   }

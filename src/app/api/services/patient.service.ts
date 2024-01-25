@@ -11,11 +11,11 @@ import { Patient } from '../models/Patient';
 export class PatientService {
   constructor(private httpClient: HttpClient) {}
 
-  getAllPatients(): Observable<Object> {
+  searchAllPatients(): Observable<Object> {
     return this.httpClient.get(url + Models.Patient + PatientEndpoints.getAll);
   }
 
-  getPatientById(id: number): Observable<Object> {
+  searchPatientById(id: number): Observable<Object> {
     return this.httpClient.get(url + Models.Patient + PatientEndpoints.getById, {
       params: {
         id: id
@@ -30,5 +30,11 @@ export class PatientService {
     return this.httpClient.post(url + Models.Patient + PatientEndpoints.addUpdate, patient, {
       params: params
     });
+  }
+
+  deletePatient(id: number) {
+    return this.httpClient.delete(url + Models.Patient + PatientEndpoints.delete, {
+      params: {id: id}
+    })
   }
 }

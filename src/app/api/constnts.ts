@@ -9,25 +9,30 @@ export const Models = {
 export const DoctorEndpoints = {
     getById: '/GetById',
     getAll: '/GetAll',
-    addUpdate: '/AddUpdate'
+    addUpdate: '/AddUpdate',
+    delete: '/Delete'
 }
 
 export const PatientEndpoints = {
     getById: '/GetById',
     getAll: '/GetAll',
-    addUpdate: '/AddUpdate'
+    addUpdate: '/AddUpdate',
+    delete: '/Delete'
 }
 
 export const AppointmentEndpoint = {
     getById: '/GetById',
     getAll: '/GetAll',
-    addUpdate: '/AddUpdate'
+    addUpdate: '/AddUpdate',
+    delete: '/Delete'
 }
 
 export const LookupEndpoint = {
     getById: '/GetById',
     getAll: '/GetAll',
-    addUpdate: '/AddUpdate'
+    addUpdate: '/AddUpdate',
+    delete: '/Delete',
+    getLookupsByCategory: '/GetLookupsByCategory'
 }
 
 export const CategoryEndpoint = {
@@ -35,5 +40,6 @@ export const CategoryEndpoint = {
     getAll: '/GetAll',
     addUpdate: '/AddUpdate',
     checkIfCodeExist: '/CheckIfCodeExist',
-    getByCode: '/GetByCode'
+    getByCode: '/GetByCode',
+    delete: '/Delete',
 }

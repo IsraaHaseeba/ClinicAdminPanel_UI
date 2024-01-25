@@ -1,12 +1,8 @@
-import { Doctor } from "./Doctor";
-import { Patient } from "./Patient";
-
 export interface Appointment {
     id?: number, 
     patientId?: number,
-    patient?: Patient,
+    patientName?: string,
     doctorId?: number,
-    doctor?: Doctor,
+    doctorName?: string,
     visitTime?: Date,
-    isDeleted?: boolean
 }

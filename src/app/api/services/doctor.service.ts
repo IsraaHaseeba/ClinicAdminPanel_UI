@@ -11,11 +11,11 @@ import { Doctor } from '../models/Doctor';
 export class DoctorService {
   constructor(private httpClient: HttpClient) {}
 
-  getAllDoctors(): Observable<Object> {
+  searchAllDoctors(): Observable<Object> {
     return this.httpClient.get(url + Models.Doctor + DoctorEndpoints.getAll);
   }
 
-  getDoctorById(id: number): Observable<Object> {
+  searchDoctorById(id: number): Observable<Object> {
     return this.httpClient.get(url + Models.Doctor + DoctorEndpoints.getById, {
       params: {
         id: id
@@ -31,4 +31,10 @@ export class DoctorService {
       params: params
     });
   }  
+
+  deleteDoctor(id: number) {
+    return this.httpClient.delete(url + Models.Doctor + DoctorEndpoints.delete, {
+      params: {id: id}
+    })
+  }
 }

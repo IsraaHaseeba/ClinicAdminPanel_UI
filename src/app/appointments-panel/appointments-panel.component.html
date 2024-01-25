@@ -12,15 +12,15 @@
 
         <tbody>
             <tr *ngFor="let appointment of appointments">
-                <td> {{appointment.doctor?.name}} </td>
-                <td> {{appointment.patient?.name}} </td>
+                <td> {{appointment.doctorName}} </td>
+                <td> {{appointment.patientName}} </td>
                 <td> {{appointment.visitTime | date: 'medium' }} </td>
                 <td>
                     <div class="control-buttons-container">
-                        <button (click)="onEdit(appointment.id!, appointment)" class="control-button">
+                        <button (click)="onEdit(appointment.id!)" class="control-button">
                             <img class="icon-img" src="..\assets\icons\edit.svg"/>
                         </button>
-                        <button (click)="onDelete(appointment.id!, appointment)" class="control-button">
+                        <button (click)="onDelete(appointment.id!)" class="control-button">
                             <img class="icon-img" src="..\assets\icons\trash.svg"/>
                         </button>
                     </div>

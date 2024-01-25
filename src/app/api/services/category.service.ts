@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CategoryEndpoint, DoctorEndpoints, Models } from '../constnts';
+import { CategoryEndpoint, Models } from '../constnts';
 import { Observable } from 'rxjs';
 import { url } from 'src/app/constants';
-import { Doctor } from '../models/Doctor';
 import { Category } from '../models/Category';
 
 @Injectable({
@@ -12,11 +11,11 @@ import { Category } from '../models/Category';
 export class CategoryService {
   constructor(private httpClient: HttpClient) {}
 
-  getAllCategories(): Observable<Object> {
+  searchAllCategories(): Observable<Object> {
     return this.httpClient.get(url + Models.Category + CategoryEndpoint.getAll);
   }
 
-  getCategoryById(id: number): Observable<Object> {
+  searchCategoryById(id: number): Observable<Object> {
     return this.httpClient.get(url + Models.Category + CategoryEndpoint.getById, {
       params: {
         id: id
@@ -41,9 +40,15 @@ export class CategoryService {
     })
   }
 
-  getByCode(code: string) {
+  searchByCode(code: string) {
     return this,this.httpClient.get(url + Models.Category + CategoryEndpoint.getByCode, {
       params: {code: code}
+    })
+  }
+
+  deleteCategory(id: number) {
+    return this.httpClient.delete(url + Models.Category + CategoryEndpoint.delete, {
+      params: {id: id}
     })
   }
 }

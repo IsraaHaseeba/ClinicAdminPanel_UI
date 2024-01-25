@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { Appointment } from '../api/models/Appointment';
 import { AppointmentService } from '../api/services/appointment.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -16,24 +16,24 @@ export class AppointmentsPanelComponent {
   constructor(private appointmentService: AppointmentService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.getAppointments();
+    this.searchAppointments();
   }
 
-  getAppointments() {
-    this.appointmentService.getAllAppoinments().subscribe(appointments => {
+  searchAppointments() {
+    this.appointmentService.searchAllAppoinments().subscribe(appointments => {
       this.appointments = appointments as Appointment[] ?? [];
     })
   }
 
-  onDelete(id: number, appointment: Appointment){
-    appointment.isDeleted = true;
-    this.addUpdate(appointment, id);
+  onDelete(id: number){
+    this.appointmentService.deleteAppointment(id).subscribe(res => {
+      this.searchAppointments();
+    });
   }
 
-  onEdit(id: number, appointment: Appointment){
+  onEdit(id: number){
     const modalRef = this.modalService.open(AppointmentAddEditFormComponent);
 		modalRef.componentInstance.id = id;
-		modalRef.componentInstance.appointment = {...appointment};
     modalRef.componentInstance.appointmentEmmitter.subscribe((res: any) => {
       this.addUpdate(res, res.id);
       })
@@ -48,7 +48,7 @@ export class AppointmentsPanelComponent {
 
   addUpdate(appointment: Appointment, id?: number){
     this.appointmentService.addUpdateAppointment(appointment, id).subscribe(res => {
-      this.getAppointments();
+      this.searchAppointments();
     });
   }
 }

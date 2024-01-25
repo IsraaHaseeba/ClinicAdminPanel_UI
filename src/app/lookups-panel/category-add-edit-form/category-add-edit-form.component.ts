@@ -9,7 +9,7 @@ import { CategoryService } from 'src/app/api/services/category.service';
   styleUrls: ['./category-add-edit-form.component.css']
 })
 export class CategoryAddEditFormComponent {
-  @Input() category: Category = {};
+  category: Category = {};
   @Input() id?: number;
   @Output() categoryEmitter: EventEmitter<Category> = new EventEmitter<Category>();
   isAdd: boolean = false;
@@ -20,7 +20,16 @@ export class CategoryAddEditFormComponent {
   ) {}
 
   ngOnInit() {
-    if(!this.id && JSON.stringify(this.category) == '{}') this.isAdd = true;
+    if(!this.id) {
+      this.isAdd = true;
+    }
+    else this.searchCategory();
+  }
+
+  searchCategory() {
+    this.categoryService.searchCategoryById(this.id!).subscribe(res => {
+      this.category = res;
+    })
   }
  
   checkIfCategoryExist(){

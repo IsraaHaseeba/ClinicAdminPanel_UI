@@ -15,24 +15,24 @@ export class PatientPanelComponent {
   constructor(private patientService: PatientService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.getPatients();
+    this.searchPatients();
   }
 
-  getPatients() {
-    this.patientService.getAllPatients().subscribe(patients => {
+  searchPatients() {
+    this.patientService.searchAllPatients().subscribe(patients => {
       this.patients = patients as Patient[] ?? [];
     })
   }
-  
-  onDelete(id: number, patient: Patient){
-    patient.isDeleted = true;
-    this.addUpdate(patient, id);
-  }
 
-  onEdit(id: number, patient: Patient){
+  onDelete(id: number){
+    this.patientService.deletePatient(id).subscribe(res => {
+      this.searchPatients();
+    });
+  }
+  
+  onEdit(id: number){
     const modalRef = this.modalService.open(PatientAddEditFormComponent);
 		modalRef.componentInstance.id = id;
-		modalRef.componentInstance.patient = {...patient};
     modalRef.componentInstance.patientEmitter.subscribe((res: any) => {
       this.addUpdate(res, res.id);
       })
@@ -47,8 +47,8 @@ export class PatientPanelComponent {
 
   addUpdate(patient: Patient, id?: number){
     this.patientService.addUpdatePatient(patient, id).subscribe(res => {
-      this.getPatients();
+      this.searchPatients();
     });
-    
   }
+  
 }

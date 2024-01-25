@@ -2,7 +2,8 @@
 @import "~@ng-select/ng-select/themes/material.theme.css";  
 
 :root{
-    --main-title: #6b6968;
+    --main-title: #3b3a39;
+    --sub-title: #9e9999;
     --container:  #f2f2f2;
     --active: #a5ccba;
 }
@@ -12,10 +13,21 @@ body {
     padding: 0;
 }
 
-.title{
-    padding: 24px;
+.pointer {
+    cursor: pointer;
+}
+
+.title {
+    padding: 24px 24px 0 24px;
     font-size: 24px;
     color: var(--main-title);
+}
+
+.sub-title {
+    padding-left: 24px;
+    padding-bottom: 16px;
+    font-size: 16px;
+    color: var(--sub-title);
 }
 
 table {

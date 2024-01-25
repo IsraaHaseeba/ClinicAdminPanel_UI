@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Patient } from 'src/app/api/models/Patient';
+import { PatientService } from 'src/app/api/services/patient.service';
 
 @Component({
   selector: 'app-patient-add-edit-form',
@@ -8,19 +9,26 @@ import { Patient } from 'src/app/api/models/Patient';
   styleUrls: ['./patient-add-edit-form.component.css']
 })
 export class PatientAddEditFormComponent {
-  @Input() patient: Patient = {};
+  patient: Patient = {};
   @Input() id?: number;
   @Output() patientEmitter: EventEmitter<Patient> = new EventEmitter<Patient>();
   isAdd: boolean = false;
 
   constructor(
-    private activeModal: NgbActiveModal
+    private activeModal: NgbActiveModal, private patientService: PatientService
   ) {}
 
   ngOnInit() {
-    if(!this.id && JSON.stringify(this.patient) == '{}') this.isAdd = true;
+    if(!this.id) this.isAdd = true;
+    else this.searchPatient();
   }
  
+  searchPatient() {
+    this.patientService.searchPatientById(this.id!).subscribe(res => {
+      this.patient = res;
+    })
+  }
+  
   OnSave() {
     this.patientEmitter?.emit(this.patient);
     this.close();

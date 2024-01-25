@@ -1,5 +1,7 @@
 <div>
     <div class="title">System Lookups</div>
+    <div class="sub-title">{{selectedCategory.code}}</div>
+
     <button (click)="onLookupAdd()" type="button" class="btn btn-secondary add-button">
         Add
     </button>
@@ -16,13 +18,13 @@
                 <tbody>
                     <tr *ngFor="let lookup of lookups">
                         <td> {{lookup?.name}} </td>
-                        <td> {{lookup.category?.title}} </td>
+                        <td> {{lookup.categoryName}} </td>
                         <td>
                             <div class="control-buttons-container">
-                                <button (click)="onLookupEdit(lookup.id!, lookup)" class="control-button">
+                                <button (click)="onLookupEdit(lookup.id!)" class="control-button">
                                     <img class="icon-img" src="..\assets\icons\edit.svg"/>
                                 </button>
-                                <button (click)="onLookupDelete(lookup.id!, lookup)" class="control-button">
+                                <button (click)="onLookupDelete(lookup.id!)" class="control-button">
                                     <img class="icon-img" src="..\assets\icons\trash.svg"/>
                                 </button>
                             </div>
@@ -41,14 +43,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr  *ngFor="let category of categories">
+                        <tr (click)="onCategorySelect(category); searchLookups()" class="pointer" [class.active]="selectedCategory.id == category.id" *ngFor="let category of categories">
                             <td>{{category.title}}</td>
                             <td>{{category.code}}</td>
                             <div class="control-buttons-container">
-                                <button (click)="onEditCategory(category)" class="control-button">
+                                <button (click)="onEditCategory($event, category)" class="control-button">
                                     <img class="icon-img" src="..\assets\icons\edit.svg"/>
                                 </button>
-                                <button (click)="deleteCategory(category)" class="control-button">
+                                <button (click)="deleteCategory($event, category.id!)" class="control-button">
                                     <img class="icon-img" src="..\assets\icons\trash.svg"/>
                                 </button>
                             </div>
@@ -56,7 +58,7 @@
                     </tbody>
                 </table>
             <div (click)="isAddCategory = true;" class="btn btn-secondary add-button">Add</div> 
-            <div  *ngIf="isAddCategory" style="display: flex; flex-direction: column; gap: 10px; padding: 10px;">
+            <div *ngIf="isAddCategory" style="display: flex; flex-direction: column; gap: 10px; padding: 10px;">
                 <span>Title</span>
                 <input type="text" class="card" style="background-color: var(--container);" [(ngModel)]="newCategory.title"> 
                 <span>Code</span>
