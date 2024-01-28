@@ -1,4 +1,5 @@
 @import "~bootstrap/dist/css/bootstrap.css";
+@import 'ngx-toastr/toastr';
 
 :root{
     --main-title: #3b3a39;

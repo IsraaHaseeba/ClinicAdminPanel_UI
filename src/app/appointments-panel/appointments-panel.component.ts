@@ -3,6 +3,7 @@ import { Appointment } from '../api/models/Appointment';
 import { AppointmentService } from '../api/services/appointment.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppointmentAddEditFormComponent } from './appointment-add-edit-form/appointment-add-edit-form.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-appointments-panel',
@@ -13,7 +14,7 @@ export class AppointmentsPanelComponent {
   appointments: Appointment[] = [];
   tableColumns = ['Doctor', 'Patient', 'Visit', ''];
 
-  constructor(private appointmentService: AppointmentService, private modalService: NgbModal) {}
+  constructor(private toastr: ToastrService,private appointmentService: AppointmentService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
     this.search();
@@ -42,6 +43,10 @@ export class AppointmentsPanelComponent {
   addUpdate(appointment: Appointment, id?: number){
     this.appointmentService.addUpdateAppointment(appointment, id).subscribe(res => {
       this.search();
+      this.toastr.success('Successful!');
+    },
+    () => {
+      this.toastr.error('Failed!');
     });
   }
 }

@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Patient } from '../api/models/Patient';
 import { PatientService } from '../api/services/patient.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PatientAddEditFormComponent } from './patient-add-edit-form/patient-add-edit-form.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-patient-panel',
@@ -12,7 +13,8 @@ import { PatientAddEditFormComponent } from './patient-add-edit-form/patient-add
 export class PatientPanelComponent {
   patients: Patient[] = [];
   tableColumns = ['Identity Number', 'Name', 'Birth Date', 'Address', ''];
-  constructor(private patientService: PatientService, private modalService: NgbModal) {}
+
+  constructor(private toastr: ToastrService, private patientService: PatientService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
     this.search();
@@ -41,6 +43,10 @@ export class PatientPanelComponent {
   addUpdate(patient: Patient, id?: number){
     this.patientService.addUpdatePatient(patient, id).subscribe(res => {
       this.search();
+      this.toastr.success('Successful!');
+    },
+    () => {
+      this.toastr.error('Failed!');
     });
   }
   

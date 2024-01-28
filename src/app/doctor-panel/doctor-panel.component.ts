@@ -3,6 +3,7 @@ import { DoctorService } from '../api/services/doctor.service';
 import { Doctor } from '../api/models/Doctor';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DoctorAddEditFormComponent } from './doctor-add-edit-form/doctor-add-edit-form.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-doctor-panel',
@@ -13,7 +14,7 @@ export class DoctorPanelComponent implements OnInit {
   doctors: Doctor[] = [];
   tableColumns = ['Name', 'Specification', 'Location', 'Working Hour - From', 'Working Hour - To', ''];
 
-  constructor(private doctorService: DoctorService, private modalService: NgbModal) {}
+  constructor(private toastr: ToastrService, private doctorService: DoctorService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
     this.search();
@@ -42,6 +43,10 @@ export class DoctorPanelComponent implements OnInit {
   addUpdate(doctor: Doctor, id?: number){
     this.doctorService.addUpdateDoctor(doctor, id).subscribe(res => {
       this.search();
+      this.toastr.success('Successful!');
+    },
+    () => {
+      this.toastr.error('Failed!');
     });
   }
 }

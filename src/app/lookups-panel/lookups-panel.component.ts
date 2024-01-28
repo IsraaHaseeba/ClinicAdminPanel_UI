@@ -6,6 +6,7 @@ import { LookupsAddEditFormComponent } from './lookups-add-edit-form/lookups-add
 import { Category } from '../api/models/Category';
 import { CategoryService } from '../api/services/category.service';
 import { CategoryAddEditFormComponent } from './category-add-edit-form/category-add-edit-form.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-lookups-panel',
@@ -15,7 +16,7 @@ import { CategoryAddEditFormComponent } from './category-add-edit-form/category-
 export class LookupsPanelComponent {
   lookups: Lookup[] = [];
   tableColumns = ['Lookup Item', 'Category', ''];
-  constructor(private lookupService: LookupService, private modalService: NgbModal, private categoryService: CategoryService) {}
+  constructor(private toastr: ToastrService, private lookupService: LookupService, private modalService: NgbModal, private categoryService: CategoryService) {}
   categories: Category[] =[];
   newCategory: Category = {};
   isAddCategory: boolean = false;
@@ -71,6 +72,10 @@ export class LookupsPanelComponent {
       this.isAddCategory = false;
       this.newCategory = {};
       this.searchCategories();
+      this.toastr.success('Successful!');
+    },
+    () => {
+      this.toastr.error('Failed!');
     })
   }
   
@@ -87,10 +92,14 @@ export class LookupsPanelComponent {
 
   updateCategory(category?: Category, id?: number) {
     if(category) {
-      this.categoryService.addUpdateCategory(category, id).subscribe((res => {
+      this.categoryService.addUpdateCategory(category, id).subscribe(res => {
             this.searchCategories();
             this.searchLookups();
-      }))
+            this.toastr.success('Successful!');
+      },
+      () => {
+        this.toastr.error('Failed!');
+      })
     }
   }
 
@@ -110,7 +119,13 @@ export class LookupsPanelComponent {
 
   addUpdateLookup(lookup: Lookup, id?: number){
     this.lookupService.addUpdateLookup(lookup, id).subscribe(res => {
-      if(this.selectedCategory.id) this.searchLookups();
+      if(this.selectedCategory.id){
+        this.searchLookups();
+      } 
+      this.toastr.success('Successful!');
+    },
+    () => {
+      this.toastr.error('Failed!');
     });
   }
 }
