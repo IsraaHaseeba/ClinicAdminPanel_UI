@@ -26,10 +26,10 @@ export class LookupsAddEditFormComponent {
       this.isAdd = true;
       this.lookup.categoryId = this.categoryId;
     }
-    else this.searchLookup();
+    else this.search();
   }
  
-  searchLookup() {
+  search() {
     this.lookupService.searchLookupById(this.id!).subscribe(res => {
       this.lookup = res;
       console.log(this.lookup)

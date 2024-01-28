@@ -23,10 +23,10 @@ export class CategoryAddEditFormComponent {
     if(!this.id) {
       this.isAdd = true;
     }
-    else this.searchCategory();
+    else this.search();
   }
 
-  searchCategory() {
+  search() {
     this.categoryService.searchCategoryById(this.id!).subscribe(res => {
       this.category = res;
     })

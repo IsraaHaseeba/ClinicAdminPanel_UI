@@ -16,10 +16,10 @@ export class DoctorPanelComponent implements OnInit {
   constructor(private doctorService: DoctorService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.searchDoctors();
+    this.search();
   }
 
-  searchDoctors() {
+  search() {
     this.doctorService.searchAllDoctors().subscribe(doctors => {
       this.doctors = doctors as Doctor[] ?? [];
     })
@@ -27,28 +27,21 @@ export class DoctorPanelComponent implements OnInit {
 
   onDelete(id: number){
     this.doctorService.deleteDoctor(id).subscribe(res => {
-      this.searchDoctors();
+      this.search();
     });
   }
 
-  onEdit(id: number){
+  onAddEdit(id: number | undefined){
     const modalRef = this.modalService.open(DoctorAddEditFormComponent);
 		modalRef.componentInstance.id = id;
     modalRef.componentInstance.doctorEmitter.subscribe((res: any) => {
-      this.addUpdate(res, res.id);
+      this.addUpdate(res, id);
     })
-  }
-
-  onAdd() {
-    const modalRef = this.modalService.open(DoctorAddEditFormComponent);
-    modalRef.componentInstance.doctorEmitter.subscribe((res: any) => {
-      this.addUpdate(res, undefined);
-      })
   }
 
   addUpdate(doctor: Doctor, id?: number){
     this.doctorService.addUpdateDoctor(doctor, id).subscribe(res => {
-      this.searchDoctors();
+      this.search();
     });
   }
 }

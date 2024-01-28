@@ -1,6 +1,6 @@
 <div>
     <div class="title">Appointments</div>
-    <button (click)="onAdd()" type="button" class="btn btn-secondary add-button">
+    <button (click)="onAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
         Add
     </button>
     <table>
@@ -17,7 +17,7 @@
                 <td> {{appointment.visitTime | date: 'medium' }} </td>
                 <td>
                     <div class="control-buttons-container">
-                        <button (click)="onEdit(appointment.id!)" class="control-button">
+                        <button (click)="onAddEdit(appointment.id!)" class="control-button">
                             <img class="icon-img" src="..\assets\icons\edit.svg"/>
                         </button>
                         <button (click)="onDelete(appointment.id!)" class="control-button">

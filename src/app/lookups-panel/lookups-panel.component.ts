@@ -47,14 +47,6 @@ export class LookupsPanelComponent {
     });
   }
 
-  addCategory() {
-    this.categoryService.addUpdateCategory(this.newCategory).subscribe(res => {
-      this.isAddCategory = false;
-      this.newCategory = {};
-      this.searchCategories();
-    })
-  }
-
   onLookupDelete(id: number){
     this.lookupService.deleteLookup(id).subscribe(res => {
       this.searchLookups();
@@ -74,6 +66,14 @@ export class LookupsPanelComponent {
     else this.isWarning = true;
   }
 
+  addCategory() {
+    this.categoryService.addUpdateCategory(this.newCategory).subscribe(res => {
+      this.isAddCategory = false;
+      this.newCategory = {};
+      this.searchCategories();
+    })
+  }
+  
   onEditCategory(ev: Event, category?: Category) {
     ev.stopPropagation();
     if(category) {
@@ -94,21 +94,13 @@ export class LookupsPanelComponent {
     }
   }
 
-  onLookupEdit(id: number){
+  onLookupAddEdit(id: number | undefined){
     const modalRef = this.modalService.open(LookupsAddEditFormComponent);
 		modalRef.componentInstance.id = id;
     modalRef.componentInstance.categories = this.categories;
-    modalRef.componentInstance.lookupEmitter.subscribe((res: any) => {
-      this.addUpdateLookup(res, res.id);
-      })
-  }
-
-  onLookupAdd() {
-    const modalRef = this.modalService.open(LookupsAddEditFormComponent);
-    modalRef.componentInstance.categories = this.categories;
     modalRef.componentInstance.categoryId = this.selectedCategory.id;
     modalRef.componentInstance.lookupEmitter.subscribe((res: any) => {
-      this.addUpdateLookup(res, undefined);
+      this.addUpdateLookup(res, id);
       })
   }
 

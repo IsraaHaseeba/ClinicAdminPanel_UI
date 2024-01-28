@@ -2,7 +2,7 @@
     <div class="title">System Lookups</div>
     <div class="sub-title">{{selectedCategory.code}}</div>
 
-    <button (click)="onLookupAdd()" type="button" class="btn btn-secondary add-button">
+    <button (click)="onLookupAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
         Add
     </button>
 
@@ -21,7 +21,7 @@
                         <td> {{lookup.categoryName}} </td>
                         <td>
                             <div class="control-buttons-container">
-                                <button (click)="onLookupEdit(lookup.id!)" class="control-button">
+                                <button (click)="onLookupAddEdit(lookup.id!)" class="control-button">
                                     <img class="icon-img" src="..\assets\icons\edit.svg"/>
                                 </button>
                                 <button (click)="onLookupDelete(lookup.id!)" class="control-button">

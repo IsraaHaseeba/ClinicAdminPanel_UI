@@ -20,10 +20,10 @@ export class PatientAddEditFormComponent {
 
   ngOnInit() {
     if(!this.id) this.isAdd = true;
-    else this.searchPatient();
+    else this.search();
   }
  
-  searchPatient() {
+  search() {
     this.patientService.searchPatientById(this.id!).subscribe(res => {
       this.patient = res;
     })

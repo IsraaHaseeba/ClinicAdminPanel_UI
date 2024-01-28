@@ -16,10 +16,10 @@ export class AppointmentsPanelComponent {
   constructor(private appointmentService: AppointmentService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
-    this.searchAppointments();
+    this.search();
   }
 
-  searchAppointments() {
+  search() {
     this.appointmentService.searchAllAppoinments().subscribe(appointments => {
       this.appointments = appointments as Appointment[] ?? [];
     })
@@ -27,28 +27,21 @@ export class AppointmentsPanelComponent {
 
   onDelete(id: number){
     this.appointmentService.deleteAppointment(id).subscribe(res => {
-      this.searchAppointments();
+      this.search();
     });
   }
 
-  onEdit(id: number){
+  onAddEdit(id: number | undefined){
     const modalRef = this.modalService.open(AppointmentAddEditFormComponent);
 		modalRef.componentInstance.id = id;
     modalRef.componentInstance.appointmentEmmitter.subscribe((res: any) => {
-      this.addUpdate(res, res.id);
+      this.addUpdate(res, id);
       })
   }
    
-  onAdd() {
-    const modalRef = this.modalService.open(AppointmentAddEditFormComponent);
-    modalRef.componentInstance.appointmentEmmitter.subscribe((res: any) => {
-      this.addUpdate(res, undefined);
-      })
-  }
-
   addUpdate(appointment: Appointment, id?: number){
     this.appointmentService.addUpdateAppointment(appointment, id).subscribe(res => {
-      this.searchAppointments();
+      this.search();
     });
   }
 }
