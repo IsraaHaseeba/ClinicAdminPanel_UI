@@ -28,7 +28,7 @@ export class LookupsPanelComponent {
 
   searchLookups() {
     if(this.selectedCategory)
-      this.lookupService.searchLookupsByCategory(this.selectedCategory.id!).subscribe(lookups => {
+      this.lookupService.searchLookupsByCategory(this.selectedCategory.code!).subscribe(lookups => {
         this.lookups = lookups as Lookup[] ?? [];
       })
   }
@@ -85,7 +85,7 @@ export class LookupsPanelComponent {
     }
   } 
 
-  updateCategory(ev: Event, category?: Category, id?: number) {
+  updateCategory(category?: Category, id?: number) {
     if(category) {
       this.categoryService.addUpdateCategory(category, id).subscribe((res => {
             this.searchCategories();

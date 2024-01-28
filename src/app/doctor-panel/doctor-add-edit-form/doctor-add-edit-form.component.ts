@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Doctor } from 'src/app/api/models/Doctor';
-import { CategoryService } from 'src/app/api/services/category.service';
 import { DoctorService } from 'src/app/api/services/doctor.service';
+import { LookupService } from 'src/app/api/services/lookup.service';
 
 @Component({
   selector: 'app-doctor-add-edit-form',
@@ -19,19 +19,18 @@ export class DoctorAddEditFormComponent {
   specifications?: any = [];
   locations?: any = [];
 
-
   constructor(
-    private activeModal: NgbActiveModal, private categoryService: CategoryService, private doctorService: DoctorService
+    private activeModal: NgbActiveModal, private lookupService: LookupService, private doctorService: DoctorService
   ) {}
 
   ngOnInit() {
-    if(!this.id && JSON.stringify(this.doctor) == '{}') this.isAdd = true;
+    if(!this.id) this.isAdd = true;
     else {
       this.searchDoctor();
     }
 
-    this.searchLookups('123d').subscribe(res => this.specifications = res ?? []);
-    this.searchLookups('122').subscribe(res => this.locations = res ?? []);
+    this.searchLookups('Specification').subscribe(res => this.specifications = res ?? []);
+    this.searchLookups('Location').subscribe(res => this.locations = res ?? []);
   }
  
   searchDoctor(){
@@ -43,7 +42,7 @@ export class DoctorAddEditFormComponent {
   }
 
   searchLookups(code: string) {
-    return this.categoryService.searchByCode(code);
+    return this.lookupService.searchLookupsByCategory(code);
   }
 
   OnSave() {
@@ -72,7 +71,6 @@ export class DoctorAddEditFormComponent {
       date.setHours(parseInt(timeParts[0], 10));
       date.setMinutes(parseInt(timeParts[1], 10));
     }
-    
     return date;
   }
 

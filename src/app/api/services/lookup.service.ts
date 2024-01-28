@@ -23,10 +23,10 @@ export class LookupService {
     });
   }
 
-  searchLookupsByCategory(id: number) {
+  searchLookupsByCategory(code: string) {
     return this.httpClient.get(url + Models.Lookup + LookupEndpoint.getLookupsByCategory, {
       params: {
-        id: id
+        code: code
       },
     });
   }
