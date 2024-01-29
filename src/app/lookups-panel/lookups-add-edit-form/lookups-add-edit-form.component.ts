@@ -31,8 +31,6 @@ export class LookupsAddEditFormComponent {
  
   search() {
     this.lookupService.searchLookupById(this.id!).subscribe(res => {
-      this.lookup = res;
-      console.log(this.lookup)
     })
   }
 

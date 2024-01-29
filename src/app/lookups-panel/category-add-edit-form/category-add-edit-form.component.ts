@@ -47,7 +47,9 @@ export class CategoryAddEditFormComponent {
   }
 
   OnSave() {
-    this.checkIfCategoryExist();
+    if (confirm('Are you sure you want to apply changes?') == true) {
+      this.checkIfCategoryExist();
+    }
   }
 
   close() {
