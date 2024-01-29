@@ -7,6 +7,7 @@ import { Category } from '../api/models/Category';
 import { CategoryService } from '../api/services/category.service';
 import { CategoryAddEditFormComponent } from './category-add-edit-form/category-add-edit-form.component';
 import { ToastrService } from 'ngx-toastr';
+import { BehaviorSubject, map } from 'rxjs';
 
 @Component({
   selector: 'app-lookups-panel',
@@ -16,13 +17,23 @@ import { ToastrService } from 'ngx-toastr';
 export class LookupsPanelComponent {
   lookups: Lookup[] = [];
   tableColumns = ['Lookup Item', 'Category', ''];
-  constructor(private toastr: ToastrService, private lookupService: LookupService, private modalService: NgbModal, private categoryService: CategoryService) {}
   categories: Category[] =[];
   newCategory: Category = {};
   isAddCategory: boolean = false;
   isWarning: boolean = false;
   selectedCategory: Category =  {};
+  searchText: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  filteredData = this.searchText.pipe(
+    map(searchText => {
+      if(!searchText || !searchText.length) {
+        return this.lookups;
+      }
+      return this.lookups.filter(d => d.name?.toLowerCase().includes(searchText.toLowerCase()) || d.categoryName?.toLowerCase().includes(searchText.toLowerCase()));
+    })
+  );
   
+  constructor(private toastr: ToastrService, private lookupService: LookupService, private modalService: NgbModal, private categoryService: CategoryService) {}
+
   ngOnInit(): void {
     this.searchCategories();
   }
@@ -31,6 +42,7 @@ export class LookupsPanelComponent {
     if(this.selectedCategory)
       this.lookupService.searchLookupsByCategory(this.selectedCategory.code!).subscribe(lookups => {
         this.lookups = lookups as Lookup[] ?? [];
+        this.searchText.next("");
       })
   }
 
@@ -38,6 +50,10 @@ export class LookupsPanelComponent {
     this.categoryService.searchAllCategories().subscribe(categories => {
       this.categories = categories as Category[];
     })
+  }
+
+  onSearch(ev: any) {
+    this.searchText.next(ev.target.value);
   }
 
   deleteCategory(ev: Event, id: number){

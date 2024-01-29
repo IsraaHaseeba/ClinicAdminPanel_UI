@@ -1,9 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Patient } from '../api/models/Patient';
 import { PatientService } from '../api/services/patient.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PatientAddEditFormComponent } from './patient-add-edit-form/patient-add-edit-form.component';
 import { ToastrService } from 'ngx-toastr';
+import { BehaviorSubject, map } from 'rxjs';
 
 @Component({
   selector: 'app-patient-panel',
@@ -13,7 +14,15 @@ import { ToastrService } from 'ngx-toastr';
 export class PatientPanelComponent {
   patients: Patient[] = [];
   tableColumns = ['Identity Number', 'Name', 'Birth Date', 'Address', ''];
-
+  searchText: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  filteredData = this.searchText.pipe(
+    map(searchText => {
+      if(!searchText || !searchText.length) {
+        return this.patients;
+      }
+      return this.patients.filter(d => d.name?.toLowerCase().includes(searchText.toLowerCase()) || d.identityNumber?.toLowerCase().includes(searchText.toLowerCase()) || d.address?.toLowerCase().includes(searchText.toLowerCase()));
+    })
+  );
   constructor(private toastr: ToastrService, private patientService: PatientService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
@@ -23,7 +32,12 @@ export class PatientPanelComponent {
   search() {
     this.patientService.searchAllPatients().subscribe(patients => {
       this.patients = patients as Patient[] ?? [];
+      this.searchText.next("");
     })
+  }
+
+  onSearch(ev: any) {
+    this.searchText.next(ev.target.value);
   }
 
   onDelete(id: number){

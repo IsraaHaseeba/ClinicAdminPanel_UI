@@ -2,12 +2,14 @@
     <div class="title">System Lookups</div>
     <div class="sub-title">{{selectedCategory.code}}</div>
 
-    <button (click)="onLookupAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
-        Add
-    </button>
+    <div style="display: flex; align-items: center">
+        <button (click)="onLookupAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
+            Add
+        </button>
+        <input type="text" [value]="searchText | async" (input)="onSearch($event)" placeholder="Search" style="margin: 16px 16px 0 16px;"/>
+    </div>
 
     <div class="main-container">
-
         <table>
                 <thead>
                     <tr>
@@ -16,7 +18,7 @@
                 </thead>
 
                 <tbody>
-                    <tr *ngFor="let lookup of lookups">
+                    <tr *ngFor="let lookup of filteredData | async">
                         <td> {{lookup?.name}} </td>
                         <td> {{lookup.categoryName}} </td>
                         <td>

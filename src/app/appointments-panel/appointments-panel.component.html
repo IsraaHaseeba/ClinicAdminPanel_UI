@@ -1,8 +1,11 @@
 <div>
     <div class="title">Appointments</div>
-    <button (click)="onAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
-        Add
-    </button>
+    <div style="display: flex; align-items: center">
+        <button (click)="onAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
+            Add
+        </button>
+        <input type="text" [value]="searchText | async" (input)="onSearch($event)" placeholder="Search" style="margin: 16px 16px 0 16px;"/>
+    </div>
     <table>
         <thead>
             <tr>
@@ -11,7 +14,7 @@
         </thead>
 
         <tbody>
-            <tr *ngFor="let appointment of appointments">
+            <tr *ngFor="let appointment of filteredData | async">
                 <td> {{appointment.doctorName}} </td>
                 <td> {{appointment.patientName}} </td>
                 <td> {{appointment.visitTime | date: 'medium' }} </td>

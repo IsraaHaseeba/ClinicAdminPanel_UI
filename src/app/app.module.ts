@@ -16,6 +16,7 @@ import { LookupsAddEditFormComponent } from './lookups-panel/lookups-add-edit-fo
 import { PatientAddEditFormComponent } from './patient-panel/patient-add-edit-form/patient-add-edit-form.component';
 import { CategoryAddEditFormComponent } from './lookups-panel/category-add-edit-form/category-add-edit-form.component';
 import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { ToastrModule } from 'ngx-toastr';
     NgbModule,
     FormsModule,
     ReactiveFormsModule,
+    BrowserAnimationsModule,
     ToastrModule.forRoot(), 
   ],
   exports:[

@@ -1,8 +1,11 @@
 <div style="width: 100%">
     <div class="title">Patients</div>
-    <button (click)="onAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
-        Add
-    </button>
+    <div style="display: flex; align-items: center">
+        <button (click)="onAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
+            Add
+        </button>
+        <input type="text" [value]="searchText | async" (input)="onSearch($event)" placeholder="Search" style="margin: 16px 16px 0 16px;"/>
+    </div>
     <table>
         <thead>
             <tr>
@@ -11,7 +14,7 @@
         </thead>
 
         <tbody>
-            <tr *ngFor="let patient of patients">
+            <tr *ngFor="let patient of filteredData | async">
                 <td> {{patient.identityNumber}} </td>
                 <td> {{patient.name}} </td>
                 <td> {{patient.birthDate | date}} </td>

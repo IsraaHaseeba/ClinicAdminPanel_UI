@@ -4,6 +4,7 @@ import { AppointmentService } from '../api/services/appointment.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppointmentAddEditFormComponent } from './appointment-add-edit-form/appointment-add-edit-form.component';
 import { ToastrService } from 'ngx-toastr';
+import { BehaviorSubject, map } from 'rxjs';
 
 @Component({
   selector: 'app-appointments-panel',
@@ -13,6 +14,15 @@ import { ToastrService } from 'ngx-toastr';
 export class AppointmentsPanelComponent {
   appointments: Appointment[] = [];
   tableColumns = ['Doctor', 'Patient', 'Visit', ''];
+  searchText: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  filteredData = this.searchText.pipe(
+    map(searchText => {
+      if(!searchText || !searchText.length) {
+        return this.appointments;
+      }
+      return this.appointments.filter(d => d.doctorName?.toLowerCase().includes(searchText.toLowerCase()) || d.patientName?.toLowerCase().includes(searchText.toLowerCase()));
+    })
+  );
 
   constructor(private toastr: ToastrService,private appointmentService: AppointmentService, private modalService: NgbModal) {}
 
@@ -23,7 +33,12 @@ export class AppointmentsPanelComponent {
   search() {
     this.appointmentService.searchAllAppoinments().subscribe(appointments => {
       this.appointments = appointments as Appointment[] ?? [];
+      this.searchText.next("");
     })
+  }
+
+  onSearch(ev: any) {
+    this.searchText.next(ev.target.value);
   }
 
   onDelete(id: number){
