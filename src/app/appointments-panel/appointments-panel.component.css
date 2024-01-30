@@ -4,3 +4,9 @@
     border: none;
     margin: 16px 16px 0 16px;
 }
+
+.form {
+    display: flex; 
+    flex-direction: column; 
+    gap: 16px;
+ }

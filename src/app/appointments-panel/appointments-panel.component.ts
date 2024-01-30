@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Appointment } from '../api/models/Appointment';
 import { AppointmentService } from '../api/services/appointment.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AppointmentAddEditFormComponent } from './appointment-add-edit-form/appointment-add-edit-form.component';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, map } from 'rxjs';
+import { Doctor } from '../api/models/Doctor';
+import { Patient } from '../api/models/Patient';
+import { DoctorService } from '../api/services/doctor.service';
+import { PatientService } from '../api/services/patient.service';
 
 @Component({
   selector: 'app-appointments-panel',
@@ -15,6 +18,11 @@ export class AppointmentsPanelComponent {
   appointments: Appointment[] = [];
   tableColumns = ['Doctor', 'Patient', 'Visit', ''];
   searchText: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  appointment: Appointment = {};
+  id?: number;
+  doctors: Doctor[] = [];
+  patients: Patient[] = [];
+  isAdd: boolean = false;
   filteredData = this.searchText.pipe(
     map(searchText => {
       if(!searchText || !searchText.length) {
@@ -23,11 +31,16 @@ export class AppointmentsPanelComponent {
       return this.appointments.filter(d => d.doctorName?.toLowerCase().includes(searchText.toLowerCase()) || d.patientName?.toLowerCase().includes(searchText.toLowerCase()));
     })
   );
+  @ViewChild('modal', { read: TemplateRef, static: true }) modal?: TemplateRef<any>;
+  modalRef?: any;
 
-  constructor(private toastr: ToastrService,private appointmentService: AppointmentService, private modalService: NgbModal) {}
+  constructor(private toastr: ToastrService,  private doctorService: DoctorService,
+    private patientService: PatientService, private appointmentService: AppointmentService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
     this.search();
+    this.searchDoctors();
+    this.searchPatients();
   }
 
   search() {
@@ -37,8 +50,42 @@ export class AppointmentsPanelComponent {
     })
   }
 
-  onSearch(ev: any) {
+  onFilter(ev: any) {
     this.searchText.next(ev.target.value);
+  }
+
+  initializeModal(id: number | undefined) {
+    if(!id) this.isAdd = true;
+    else this.searchAppointment(id);
+  }
+
+  searchAppointment(id: number) {
+    this.appointmentService.searchAppoinmentById(id).subscribe(res => {
+      this.appointment = res;
+    })
+  }
+
+  searchDoctors() {
+    this.doctorService.searchAllDoctors().subscribe((doctors) => {
+      this.doctors = (doctors as Doctor[]) ?? [];
+    });
+  }
+
+  searchPatients() {
+    this.patientService.searchAllPatients().subscribe((patients) => {
+      this.patients = (patients as Patient[]) ?? [];
+    });
+  }
+
+  onSave() {
+    this.addUpdate(this.appointment, this.id);
+    this.appointment = {};
+    this.id = 0;
+    this.close();
+  }
+
+  close() {
+    this.modalRef.close();
   }
 
   onDelete(id: number){
@@ -48,11 +95,9 @@ export class AppointmentsPanelComponent {
   }
 
   onAddEdit(id: number | undefined){
-    const modalRef = this.modalService.open(AppointmentAddEditFormComponent);
-		modalRef.componentInstance.id = id;
-    modalRef.componentInstance.appointmentEmmitter.subscribe((res: any) => {
-      this.addUpdate(res, id);
-      })
+    this.id = id;
+    this.modalRef = this.modalService.open(this.modal);
+    this.initializeModal(id);
   }
    
   addUpdate(appointment: Appointment, id?: number){

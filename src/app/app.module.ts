@@ -8,13 +8,8 @@ import { PatientPanelComponent } from './patient-panel/patient-panel.component';
 import { LookupsPanelComponent } from './lookups-panel/lookups-panel.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
 import { AppointmentsPanelComponent } from './appointments-panel/appointments-panel.component';
-import { AppointmentAddEditFormComponent } from './appointments-panel/appointment-add-edit-form/appointment-add-edit-form.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
-import { DoctorAddEditFormComponent } from './doctor-panel/doctor-add-edit-form/doctor-add-edit-form.component';
-import { LookupsAddEditFormComponent } from './lookups-panel/lookups-add-edit-form/lookups-add-edit-form.component';
-import { PatientAddEditFormComponent } from './patient-panel/patient-add-edit-form/patient-add-edit-form.component';
-import { CategoryAddEditFormComponent } from './lookups-panel/category-add-edit-form/category-add-edit-form.component';
+import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -26,11 +21,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     LookupsPanelComponent,
     SideMenuComponent,
     AppointmentsPanelComponent,
-    AppointmentAddEditFormComponent,
-    DoctorAddEditFormComponent,
-    LookupsAddEditFormComponent,
-    PatientAddEditFormComponent,
-    CategoryAddEditFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,7 +34,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   ],
   exports:[
   ],
-  providers: [],
+  providers: [
+    NgbActiveModal,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

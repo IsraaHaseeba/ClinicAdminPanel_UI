@@ -1,75 +1,209 @@
 <div>
-    <div class="title">System Lookups</div>
-    <div class="sub-title">{{selectedCategory.code}}</div>
+  <div class="title">System Lookups</div>
+  <div class="sub-title">{{ selectedCategory.code }}</div>
 
-    <div style="display: flex; align-items: center">
-        <button (click)="onLookupAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
-            Add
-        </button>
-        <input type="text" [value]="searchText | async" (input)="onSearch($event)" placeholder="Search" style="margin: 16px 16px 0 16px;"/>
+  <div style="display: flex; align-items: center">
+    <button
+      (click)="onAddEdit(modalEntities.Lookup, undefined)"
+      type="button"
+      class="btn btn-secondary add-button"
+    >
+      Add
+    </button>
+    <input
+      type="text"
+      [value]="searchText | async"
+      (input)="onFilter($event)"
+      placeholder="Search"
+      style="margin: 16px 16px 0 16px"
+    />
+  </div>
+
+  <div class="main-container">
+    <table>
+      <thead>
+        <tr>
+          <th *ngFor="let column of tableColumns">{{ column }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let lookup of filteredData | async">
+          <td>{{ lookup?.name }}</td>
+          <td>{{ lookup.categoryName }}</td>
+          <td>
+            <div class="control-buttons-container">
+              <button
+                (click)="onAddEdit(modalEntities.Lookup, lookup.id!)"
+                class="control-button"
+              >
+                <img class="icon-img" src="..\assets\icons\edit.svg" />
+              </button>
+              <button
+                (click)="onDelete( modalEntities.Lookup, lookup.id!)"
+                class="control-button"
+              >
+                <img class="icon-img" src="..\assets\icons\trash.svg" />
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="categories-container">
+      <div class="title">Categories</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            (click)="onCategorySelect(category); searchLookups()"
+            class="pointer"
+            [class.active]="selectedCategory.id == category.id"
+            *ngFor="let category of categories"
+          >
+            <td>{{ category.title }}</td>
+            <td>{{ category.code }}</td>
+            <div class="control-buttons-container">
+              <button
+                (click)="onAddEdit(modalEntities.Category, category.id, $event)"
+                class="control-button"
+              >
+                <img class="icon-img" src="..\assets\icons\edit.svg" />
+              </button>
+              <button
+                (click)="onDelete(modalEntities.Category, category.id!, $event)"
+                class="control-button"
+              >
+                <img class="icon-img" src="..\assets\icons\trash.svg" />
+              </button>
+            </div>
+          </tr>
+        </tbody>
+      </table>
+      <div (click)="onAddEdit(modalEntities.Category, undefined)" class="btn btn-secondary add-button">
+        Add
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #lookupsModal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">
+        {{ isAdd ? "Add" : "Edit" }} Lookup
+      </h5>
     </div>
 
-    <div class="main-container">
-        <table>
-                <thead>
-                    <tr>
-                        <th *ngFor="let column of tableColumns">{{ column }}</th>
-                    </tr>
-                </thead>
+    <div class="modal-body">
+      <form>
+        <div
+          class="form"
+          style="display: flex; flex-direction: column; gap: 16px"
+        >
+          <div class="form-group">
+            <label for="doctorName">Name</label>
+            <input
+              [(ngModel)]="lookup.name"
+              class="form-control"
+              name="doctorName"
+              id="doctorName"
+              type="text"
+            />
+          </div>
 
-                <tbody>
-                    <tr *ngFor="let lookup of filteredData | async">
-                        <td> {{lookup?.name}} </td>
-                        <td> {{lookup.categoryName}} </td>
-                        <td>
-                            <div class="control-buttons-container">
-                                <button (click)="onLookupAddEdit(lookup.id!)" class="control-button">
-                                    <img class="icon-img" src="..\assets\icons\edit.svg"/>
-                                </button>
-                                <button (click)="onLookupDelete(lookup.id!)" class="control-button">
-                                    <img class="icon-img" src="..\assets\icons\trash.svg"/>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-        </table>
-
-        <div class="categories-container">
-            <div class="title">Categories</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Code</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr (click)="onCategorySelect(category); searchLookups()" class="pointer" [class.active]="selectedCategory.id == category.id" *ngFor="let category of categories">
-                            <td>{{category.title}}</td>
-                            <td>{{category.code}}</td>
-                            <div class="control-buttons-container">
-                                <button (click)="onEditCategory($event, category)" class="control-button">
-                                    <img class="icon-img" src="..\assets\icons\edit.svg"/>
-                                </button>
-                                <button (click)="deleteCategory($event, category.id!)" class="control-button">
-                                    <img class="icon-img" src="..\assets\icons\trash.svg"/>
-                                </button>
-                            </div>
-                        </tr>
-                    </tbody>
-                </table>
-            <div (click)="isAddCategory = true;" class="btn btn-secondary add-button">Add</div> 
-            <div *ngIf="isAddCategory" style="display: flex; flex-direction: column; gap: 10px; padding: 10px;">
-                <span>Title</span>
-                <input type="text" class="card" style="background-color: var(--container);" [(ngModel)]="newCategory.title"> 
-                <span>Code</span>
-                <input type="text" class="card" style="background-color: var(--container);" [(ngModel)]="newCategory.code"> 
-                <button (click)="checkIfCategoryExist()" class="btn">Ok</button>
-                <small *ngIf="isWarning" style="color: red;">Code exist or invalid.</small>
-            </div>
-
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select
+              class="form-control"
+              name="category"
+              id="category"
+              [(ngModel)]="lookup.categoryId"
+            >
+              <option [value]="undefined" hidden selected>
+                Select Category
+              </option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.title }}
+              </option>
+            </select>
+          </div>
         </div>
-</div>
+      </form>
+    </div>
 
-</div>
+    <div class="modal-footer">
+      <button (click)="close()" type="button" class="btn btn-secondary">
+        Close
+      </button>
+      <button
+        (click)="onSave(modalEntities.Lookup)"
+        type="button"
+        class="btn btn-primary"
+      >
+        {{ isAdd ? "Submit" : "Save" }}
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #categoriesModal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">
+        {{ isAdd ? "Add" : "Edit" }} Category
+      </h5>
+    </div>
+
+    <div class="modal-body">
+      <form #form="ngForm" (ngSubmit)="onSave(modalEntities.Category)">
+        <div
+          class="form"
+          style="display: flex; flex-direction: column; gap: 16px"
+        >
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input
+              [(ngModel)]="category.title"
+              required
+              class="form-control"
+              name="title"
+              id="title"
+              type="text"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="code">Code</label>
+            <input
+              [(ngModel)]="category.code"
+              required
+              class="form-control"
+              name="code"
+              id="code"
+              type="text"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button (click)="close()" type="button" class="btn btn-secondary">
+            Close
+          </button>
+          <button type="button" (click)="onSave(modalEntities.Category)" 
+            class="btn btn-primary">
+            {{ isAdd ? "Submit" : "Save" }}
+          </button>
+          <small *ngIf="isWarning == true" style="color: red"
+            >Code exist or invalid.</small
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>

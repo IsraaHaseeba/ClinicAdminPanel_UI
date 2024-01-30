@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DoctorService } from '../api/services/doctor.service';
 import { Doctor } from '../api/models/Doctor';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DoctorAddEditFormComponent } from './doctor-add-edit-form/doctor-add-edit-form.component';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, map } from 'rxjs';
+import { LookupService } from '../api/services/lookup.service';
 
 @Component({
   selector: 'app-doctor-panel',
@@ -13,57 +13,141 @@ import { BehaviorSubject, map } from 'rxjs';
 })
 export class DoctorPanelComponent implements OnInit {
   doctors: Doctor[] = [];
-  tableColumns = ['Name', 'Specification', 'Location', 'Working Hour - From', 'Working Hour - To', ''];
+  doctor: any = {};
+  isAdd: boolean = false;
+  id?: number;
+  fromTime?: any;
+  toTime?: any;
+  lookupsLists: any = {};
+  lookupsKeys = ['Specification', 'Location'];
+  tableColumns = [
+    'Name',
+    'Specification',
+    'Location',
+    'Working Hour - From',
+    'Working Hour - To',
+    '',
+  ];
   searchText: BehaviorSubject<string> = new BehaviorSubject<string>('');
   filteredData = this.searchText.pipe(
-    map(searchText => {
-      if(!searchText || !searchText.length) {
+    map((searchText) => {
+      if (!searchText || !searchText.length) {
         return this.doctors;
       }
-      return this.doctors.filter(d => d.name?.toLowerCase().includes(searchText.toLowerCase()) || d.locationName?.toLowerCase().includes(searchText.toLowerCase()) || d.specificationName?.toLowerCase().includes(searchText.toLowerCase()));
+      return this.doctors.filter(
+        (d) =>
+          d.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+          d.locationName?.toLowerCase().includes(searchText.toLowerCase()) ||
+          d.specificationName?.toLowerCase().includes(searchText.toLowerCase())
+      );
     })
   );
-  
-  constructor(private toastr: ToastrService, private doctorService: DoctorService, private modalService: NgbModal) {
-    
-  }
+
+  @ViewChild('modal', { read: TemplateRef, static: true }) modal?: TemplateRef<any>;
+  modalRef?: any;
+  constructor(
+    private toastr: ToastrService,
+    private doctorService: DoctorService,
+    private modalService: NgbModal,
+    private lookupService: LookupService,
+    ) {}
 
   ngOnInit(): void {
     this.search();
+    this.lookupsKeys.forEach((lookup) => {
+      this.searchLookups(lookup).subscribe((res) => {
+        this.lookupsLists[lookup] = res ?? [];
+      });
+    });
   }
 
   search() {
-    this.doctorService.searchAllDoctors().subscribe(doctors => {
-      this.doctors = doctors as Doctor[] ?? [];
-      this.searchText.next("")
-    })
+    this.doctorService.searchAllDoctors().subscribe((doctors) => {
+      this.doctors = (doctors as Doctor[]) ?? [];
+      this.searchText.next('');
+    });
   }
 
-  onDelete(id: number){
-    this.doctorService.deleteDoctor(id).subscribe(res => {
+  searchLookups(code: string) {
+    return this.lookupService.searchLookupsByCategory(code);
+  }
+
+  searchDoctor(id: number) {
+    this.doctorService.searchDoctorById(id).subscribe((res) => {
+      this.doctor = res;
+      if (this.doctor.fromWorkingHour)
+        this.fromTime = this.dateToTime(this.doctor.fromWorkingHour);
+      if (this.doctor.toWorkingHour)
+        this.toTime = this.dateToTime(this.doctor.toWorkingHour);
+    });
+  }
+
+  initializeModal(id: number | undefined) {
+    if (!id) this.isAdd = true;
+    else {
+      this.searchDoctor(id);
+    }
+  }
+
+  onNameChange(ev: any) {
+    this.doctor.name = ev.tarsearch.value;
+  }
+
+  onSave() {
+    this.doctor.toWorkingHour = this.timeToDate(this.toTime);
+    this.doctor.fromWorkingHour = this.timeToDate(this.fromTime);
+    this.addUpdate(this.doctor, this.id);
+    this.close();
+  }
+
+  close() {
+    this.modalRef.close();
+    this.doctor = {};
+    this.id = 0;
+  }
+
+  dateToTime(dateInput: any) {
+    let date = new Date(dateInput);
+    let hours = date.getHours();
+    let min = date.getMinutes();
+    return `${String(hours).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+  }
+
+  timeToDate(time: any) {
+    const date = new Date();
+    if (time) {
+      const timeParts = time.split(':');
+      date.setHours(parseInt(timeParts[0], 10));
+      date.setMinutes(parseInt(timeParts[1], 10));
+    }
+    return date;
+  }
+
+  onDelete(id: number) {
+    this.doctorService.deleteDoctor(id).subscribe((res) => {
       this.search();
     });
   }
 
-  onSearch(ev: any) {
+  onFilter(ev: any) {
     this.searchText.next(ev.target.value);
   }
 
-  onAddEdit(id: number | undefined){
-    const modalRef = this.modalService.open(DoctorAddEditFormComponent);
-		modalRef.componentInstance.id = id;
-    modalRef.componentInstance.doctorEmitter.subscribe((res: any) => {
-      this.addUpdate(res, id);
-    })
+  onAddEdit(id: number | undefined) {
+    this.id = id;
+    this.modalRef = this.modalService.open(this.modal);
+    this.initializeModal(id);
   }
 
-  addUpdate(doctor: Doctor, id?: number){
-    this.doctorService.addUpdateDoctor(doctor, id).subscribe(res => {
-      this.search();
-      this.toastr.success('Successful!');
-    },
-    () => {
-      this.toastr.error('Failed!');
-    });
+  addUpdate(doctor: Doctor, id?: number) {
+    this.doctorService.addUpdateDoctor(doctor, id).subscribe(
+      (res) => {
+        this.search();
+        this.toastr.success('Successful!');
+      },
+      () => {
+        this.toastr.error('Failed!');
+      }
+    );
   }
 }

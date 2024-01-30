@@ -4,7 +4,7 @@
         <button (click)="onAddEdit(undefined)" type="button" class="btn btn-secondary add-button">
             Add
         </button>
-        <input type="text" [value]="searchText | async" (input)="onSearch($event)" placeholder="Search" style="margin: 16px 16px 0 16px;"/>
+        <input type="text" [value]="searchText | async" (input)="onFilter($event)" placeholder="Search" style="margin: 16px 16px 0 16px;"/>
     </div>
     <table>
         <thead>
@@ -33,3 +33,43 @@
         </tbody>
     </table>
 </div>
+
+<ng-template #modal>
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{ isAdd ? 'Add' : 'Edit' }} Patient</h5>
+        </div>
+    
+        <div class="modal-body">
+            <form #form='ngForm'>
+              <div class="form" style="display: flex; flex-direction: column; gap: 16px;">
+    
+                <div class="form-group"> 
+                    <label for="ID">Identity Number</label>
+                    <input [(ngModel)]="patient.identityNumber" class="form-control" name="ID" id="ID" type="text">
+                </div>
+    
+                <div class="form-group"> 
+                    <label for="patientName">Name</label>
+                    <input [(ngModel)]="patient.name" class="form-control" name="patientName" id="patientName" type="text">
+                </div>
+    
+                <div class="form-group"> 
+                    <label for="birthDate">Birth Date</label>
+                    <input [(ngModel)]="patient.birthDate" class="form-control" name="birthDate" id="birthDate" type="date">
+                </div>
+    
+                <div class="form-group"> 
+                    <label for="address">Address</label>
+                    <input [(ngModel)]="patient.address" class="form-control" name="address" id="address" type="text">
+                </div>
+              </div>
+            </form>
+        </div>
+    
+        <div class="modal-footer">
+          <button (click)="close()" type="button" class="btn btn-secondary"> Close </button>
+          <button (click)="onSave()" type="button" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
+        </div>
+      </div>
+</ng-template>

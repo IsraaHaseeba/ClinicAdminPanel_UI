@@ -1,147 +1,197 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Lookup } from '../api/models/Lookup';
 import { LookupService } from '../api/services/lookup.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { LookupsAddEditFormComponent } from './lookups-add-edit-form/lookups-add-edit-form.component';
 import { Category } from '../api/models/Category';
 import { CategoryService } from '../api/services/category.service';
-import { CategoryAddEditFormComponent } from './category-add-edit-form/category-add-edit-form.component';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, map } from 'rxjs';
+
+export enum ModalEntities {Lookup, Category}
 
 @Component({
   selector: 'app-lookups-panel',
   templateUrl: './lookups-panel.component.html',
-  styleUrls: ['./lookups-panel.component.css']
+  styleUrls: ['./lookups-panel.component.css'],
 })
+
 export class LookupsPanelComponent {
-  lookups: Lookup[] = [];
   tableColumns = ['Lookup Item', 'Category', ''];
-  categories: Category[] =[];
-  newCategory: Category = {};
-  isAddCategory: boolean = false;
+  lookups: Lookup[] = [];
+  categories: Category[] = [];
+  selectedCategory: Category = {};
+  lookup: Lookup = {};
+  category: Category = {};
+  lookupId?: number;
+  categoryId?: number;
+  isAdd: boolean = false;
   isWarning: boolean = false;
-  selectedCategory: Category =  {};
   searchText: BehaviorSubject<string> = new BehaviorSubject<string>('');
   filteredData = this.searchText.pipe(
-    map(searchText => {
-      if(!searchText || !searchText.length) {
+    map((searchText) => {
+      if (!searchText || !searchText.length) {
         return this.lookups;
       }
-      return this.lookups.filter(d => d.name?.toLowerCase().includes(searchText.toLowerCase()) || d.categoryName?.toLowerCase().includes(searchText.toLowerCase()));
+      return this.lookups.filter(
+        (d) =>
+          d.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+          d.categoryName?.toLowerCase().includes(searchText.toLowerCase())
+      );
     })
   );
   
-  constructor(private toastr: ToastrService, private lookupService: LookupService, private modalService: NgbModal, private categoryService: CategoryService) {}
+  @ViewChild('lookupsModal', { read: TemplateRef, static: true })
+  lookupsModal?: TemplateRef<any>;
+  @ViewChild('categoriesModal', { read: TemplateRef, static: true })
+  categoryModal?: TemplateRef<any>;
+
+  modalRef?: any;
+  modalEntities = ModalEntities;
+
+  constructor(
+    private toastr: ToastrService,
+    private lookupService: LookupService,
+    private modalService: NgbModal,
+    private categoryService: CategoryService
+  ) {}
 
   ngOnInit(): void {
     this.searchCategories();
   }
 
   searchLookups() {
-    if(this.selectedCategory)
-      this.lookupService.searchLookupsByCategory(this.selectedCategory.code!).subscribe(lookups => {
-        this.lookups = lookups as Lookup[] ?? [];
-        this.searchText.next("");
-      })
+    if (this.selectedCategory)
+      this.lookupService
+        .searchLookupsByCategory(this.selectedCategory.code!)
+        .subscribe((lookups) => {
+          this.lookups = (lookups as Lookup[]) ?? [];
+          this.searchText.next('');
+        });
   }
 
   searchCategories() {
-    this.categoryService.searchAllCategories().subscribe(categories => {
+    this.categoryService.searchAllCategories().subscribe((categories) => {
       this.categories = categories as Category[];
-    })
+    });
   }
 
-  onSearch(ev: any) {
+  onFilter(ev: any) {
     this.searchText.next(ev.target.value);
   }
 
-  deleteCategory(ev: Event, id: number){
-    ev.stopPropagation();
-    this.categoryService.deleteCategory(id).subscribe(res => {
-      this.searchCategories();
-      this.selectedCategory = {};
-    });
-  }
-
-  onLookupDelete(id: number){
-    this.lookupService.deleteLookup(id).subscribe(res => {
-      this.searchLookups();
-    });
-  }
-
-  checkIfCategoryExist(){
-    if(this.newCategory.code) {
-      this.categoryService.checkIfCodeExist(this.newCategory.code).subscribe(isExisting => {
-            if(isExisting == false){
-              this.addCategory();
-              this.isWarning = false;
-            }
-            else this.isWarning = true;
-          })
-    }
-    else this.isWarning = true;
-  }
-
-  addCategory() {
-    this.categoryService.addUpdateCategory(this.newCategory).subscribe(res => {
-      this.isAddCategory = false;
-      this.newCategory = {};
-      this.searchCategories();
-      this.toastr.success('Successful!');
-    },
-    () => {
-      this.toastr.error('Failed!');
+  searchCategory(id: number) {
+    this.categoryService.searchCategoryById(id).subscribe(res => {
+      this.category = res;
     })
   }
-  
-  onEditCategory(ev: Event, category?: Category) {
-    ev.stopPropagation();
-    if(category) {
-      const modalRef = this.modalService.open(CategoryAddEditFormComponent);
-      modalRef.componentInstance.id = category.id;
-      modalRef.componentInstance.categoryEmitter.subscribe((res: any) => {
-        this.updateCategory(res, res?.id);
-      })
-    }
-  } 
 
-  updateCategory(category?: Category, id?: number) {
-    if(category) {
-      this.categoryService.addUpdateCategory(category, id).subscribe(res => {
-            this.searchCategories();
-            this.searchLookups();
-            this.toastr.success('Successful!');
-      },
-      () => {
-        this.toastr.error('Failed!');
-      })
+  searchLookup(id: number) {
+    this.lookupService.searchLookupById(id).subscribe((res) => {
+      this.lookup = res;
+    });
+  }
+
+  initializeModal(entity: number, id: number | undefined) {
+    if (!id) {
+      this.isAdd = true;
+      if (entity == ModalEntities.Lookup)
+        this.lookup.categoryId = this.selectedCategory.id;
+    } else {
+      if (entity == ModalEntities.Lookup) this.searchLookup(id);
+      else if (entity == ModalEntities.Category) this.searchCategory(id);
     }
   }
 
-  onLookupAddEdit(id: number | undefined){
-    const modalRef = this.modalService.open(LookupsAddEditFormComponent);
-		modalRef.componentInstance.id = id;
-    modalRef.componentInstance.categories = this.categories;
-    modalRef.componentInstance.categoryId = this.selectedCategory.id;
-    modalRef.componentInstance.lookupEmitter.subscribe((res: any) => {
-      this.addUpdateLookup(res, id);
-      })
+  onSave(entity: number) {
+    if (entity == ModalEntities.Lookup) {
+      this.addUpdate(entity, this.lookup, this.lookupId);
+      this.close();
+    }
+    else if (entity == ModalEntities.Category) {
+      if(this.category.code) {
+          this.categoryService.checkIfCodeExist(this.category.code, this.categoryId).subscribe(res => {
+            if(res == true){
+              this.isWarning = true;
+            }
+            else {
+              if(confirm("Are you sure you want to save changes?")){
+                this.addUpdate(entity, this.category, this.categoryId);
+              }
+              this.isWarning = false;
+              this.close();
+            }
+          });
+        }
+        else this.isWarning = false;
+      }
+  }
+
+  close() {
+    this.category = {};
+    this.categoryId = 0;
+    this.lookup = {};
+    this.lookupId = 0;
+    this.modalRef.close();
+  }
+
+  onDelete(entity: number, id: number, ev?: Event) {
+    if(ev) ev.stopPropagation();
+    if (entity == ModalEntities.Lookup) {
+      this.lookupService.deleteLookup(id).subscribe((res) => {
+      this.searchLookups();
+      });
+    }
+    else if (entity == ModalEntities.Category) {
+      this.categoryService.deleteCategory(id).subscribe((res) => {
+          this.searchCategories();
+          this.selectedCategory = {};
+        });
+    }
+  }
+
+  onAddEdit(entity: number, id: number | undefined, event?: any) {
+    if (entity == ModalEntities.Lookup) {
+      this.modalRef = this.modalService.open(this.lookupsModal);
+      this.lookupId = id;
+    }
+    else if (entity == ModalEntities.Category) {
+      if(event) event.stopPropagation();
+      this.modalRef = this.modalService.open(this.categoryModal);
+      this.categoryId = id;
+    }
+    this.initializeModal(entity, id);
   }
 
   onCategorySelect(category: Category) {
     this.selectedCategory = category;
   }
 
-  addUpdateLookup(lookup: Lookup, id?: number){
-    this.lookupService.addUpdateLookup(lookup, id).subscribe(res => {
-      if(this.selectedCategory.id){
-        this.searchLookups();
-      } 
-      this.toastr.success('Successful!');
-    },
-    () => {
-      this.toastr.error('Failed!');
-    });
+  addUpdate(entity: number, object: any, id?: number) {
+    if (entity == ModalEntities.Lookup) {
+      this.lookupService.addUpdateLookup(object, id).subscribe(
+        (res) => {
+          if (this.selectedCategory.id) {
+            this.searchLookups();
+          }
+          this.toastr.success('Successful!');
+        },
+        () => {
+          this.toastr.error('Failed!');
+        }
+      );
+    }
+
+    else if(entity == ModalEntities.Category) {
+      this.categoryService.addUpdateCategory(object, id).subscribe(
+        (res) => {
+          this.searchCategories();
+          this.searchLookups();
+          this.toastr.success('Successful!');
+        },
+        () => {
+          this.toastr.error('Failed!');
+        }
+      );
+    }
   }
 }

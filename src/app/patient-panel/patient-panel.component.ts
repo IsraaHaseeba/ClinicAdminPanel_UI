@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { Patient } from '../api/models/Patient';
 import { PatientService } from '../api/services/patient.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { PatientAddEditFormComponent } from './patient-add-edit-form/patient-add-edit-form.component';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, map } from 'rxjs';
 
@@ -15,6 +14,9 @@ export class PatientPanelComponent {
   patients: Patient[] = [];
   tableColumns = ['Identity Number', 'Name', 'Birth Date', 'Address', ''];
   searchText: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  patient: Patient = {};
+  id?: number;
+  isAdd: boolean = false;
   filteredData = this.searchText.pipe(
     map(searchText => {
       if(!searchText || !searchText.length) {
@@ -23,6 +25,9 @@ export class PatientPanelComponent {
       return this.patients.filter(d => d.name?.toLowerCase().includes(searchText.toLowerCase()) || d.identityNumber?.toLowerCase().includes(searchText.toLowerCase()) || d.address?.toLowerCase().includes(searchText.toLowerCase()));
     })
   );
+  @ViewChild('modal', { read: TemplateRef, static: true }) modal?: TemplateRef<any>;
+  modalRef?: any;
+  
   constructor(private toastr: ToastrService, private patientService: PatientService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
@@ -36,8 +41,19 @@ export class PatientPanelComponent {
     })
   }
 
-  onSearch(ev: any) {
+  onFilter(ev: any) {
     this.searchText.next(ev.target.value);
+  }
+
+  searchPatient(id: number) {
+    this.patientService.searchPatientById(id).subscribe(res => {
+      this.patient = res;
+    })
+  }
+
+  initializeModal(id: number | undefined) {
+    if(!id) this.isAdd = true;
+    else this.searchPatient(id);
   }
 
   onDelete(id: number){
@@ -45,13 +61,24 @@ export class PatientPanelComponent {
       this.search();
     });
   }
+
+  onSave() {
+    this.addUpdate(this.patient, this.id);
+    this.patient = {};
+    this.id = 0;
+    this.close();
+  }
+  
+  close() {
+    this.modalRef.close();
+    this.patient = {};
+    this.id = 0;
+  }
   
   onAddEdit(id: number | undefined){
-    const modalRef = this.modalService.open(PatientAddEditFormComponent);
-		modalRef.componentInstance.id = id;
-    modalRef.componentInstance.patientEmitter.subscribe((res: any) => {
-      this.addUpdate(res, id);
-      })
+    this.id = id;
+    this.modalRef = this.modalService.open(this.modal);
+    this.initializeModal(id);
   }
 
   addUpdate(patient: Patient, id?: number){
