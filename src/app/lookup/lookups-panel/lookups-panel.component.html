@@ -102,7 +102,7 @@
     </div>
 
     <div class="modal-body">
-      <form>
+      <form #lookupForm="ngForm">
         <div
           class="form"
           style="display: flex; flex-direction: column; gap: 16px"
@@ -110,17 +110,20 @@
           <div class="form-group">
             <label for="doctorName">Name</label>
             <input
+              required 
               [(ngModel)]="lookup.name"
               class="form-control"
               name="doctorName"
               id="doctorName"
               type="text"
             />
+            <small *ngIf="!isFormValid && lookup.name == undefined" class="required-field">*Name is required</small>
           </div>
 
           <div class="form-group">
             <label for="category">Category</label>
             <select
+              required
               class="form-control"
               name="category"
               id="category"
@@ -133,6 +136,7 @@
                 {{ category.title }}
               </option>
             </select>
+            <small *ngIf="!isFormValid && lookup.categoryId == undefined" class="required-field">*Category is required</small>
           </div>
         </div>
       </form>
@@ -143,7 +147,7 @@
         Close
       </button>
       <button
-        (click)="onSave(modalEntities.Lookup)"
+        (click)="onSave(lookupForm, modalEntities.Lookup)"
         type="button"
         class="btn btn-primary"
       >
@@ -162,7 +166,7 @@
     </div>
 
     <div class="modal-body">
-      <form #form="ngForm" (ngSubmit)="onSave(modalEntities.Category)">
+      <form #categorisForm="ngForm">
         <div
           class="form"
           style="display: flex; flex-direction: column; gap: 16px"
@@ -170,6 +174,7 @@
           <div class="form-group">
             <label for="title">Title</label>
             <input
+              required
               [(ngModel)]="category.title"
               required
               class="form-control"
@@ -177,11 +182,13 @@
               id="title"
               type="text"
             />
+            <small *ngIf="!isFormValid && category.title == undefined" class="required-field">*Title is required</small>
           </div>
 
           <div class="form-group">
             <label for="code">Code</label>
             <input
+              required
               [(ngModel)]="category.code"
               required
               class="form-control"
@@ -189,13 +196,14 @@
               id="code"
               type="text"
             />
+            <small *ngIf="!isFormValid && category.code == undefined" class="required-field">*Code is required</small>
           </div>
         </div>
         <div class="modal-footer">
           <button (click)="close()" type="button" class="btn btn-secondary">
             Close
           </button>
-          <button type="button" (click)="onSave(modalEntities.Category)" 
+          <button type="button" (click)="onSave(categorisForm, modalEntities.Category)" 
             class="btn btn-primary">
             {{ isAdd ? "Submit" : "Save" }}
           </button>

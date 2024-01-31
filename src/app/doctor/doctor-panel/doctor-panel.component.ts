@@ -1,10 +1,11 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { DoctorService } from '../api/services/doctor.service';
-import { Doctor } from '../api/models/Doctor';
+import { DoctorService } from '../../api/services/doctor.service';
+import { Doctor } from '../../api/models/Doctor';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, map } from 'rxjs';
-import { LookupService } from '../api/services/lookup.service';
+import { LookupService } from '../../api/services/lookup.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-doctor-panel',
@@ -45,11 +46,13 @@ export class DoctorPanelComponent implements OnInit {
 
   @ViewChild('modal', { read: TemplateRef, static: true }) modal?: TemplateRef<any>;
   modalRef?: any;
+  isFormValid: boolean = true;
+
   constructor(
     private toastr: ToastrService,
     private doctorService: DoctorService,
     private modalService: NgbModal,
-    private lookupService: LookupService,
+    private lookupService: LookupService
     ) {}
 
   ngOnInit(): void {
@@ -93,7 +96,13 @@ export class DoctorPanelComponent implements OnInit {
     this.doctor.name = ev.tarsearch.value;
   }
 
-  onSave() {
+  onSave(form: NgForm) {
+    if (form.invalid) {
+      this.isFormValid = false;
+      form.form.markAllAsTouched();
+      return;
+    }
+
     this.doctor.toWorkingHour = this.timeToDate(this.toTime);
     this.doctor.fromWorkingHour = this.timeToDate(this.fromTime);
     this.addUpdate(this.doctor, this.id);
@@ -102,8 +111,6 @@ export class DoctorPanelComponent implements OnInit {
 
   close() {
     this.modalRef.close();
-    this.doctor = {};
-    this.id = 0;
   }
 
   dateToTime(dateInput: any) {
@@ -136,6 +143,13 @@ export class DoctorPanelComponent implements OnInit {
   onAddEdit(id: number | undefined) {
     this.id = id;
     this.modalRef = this.modalService.open(this.modal);
+    this.modalRef.result.finally(() => {
+      this.id = 0; 
+      this.doctor = {};
+      this.isFormValid = true;
+      this.toTime = undefined;
+      this.fromTime = undefined;
+    });
     this.initializeModal(id);
   }
 

@@ -43,52 +43,60 @@
     </div>
 
     <div class="modal-body">
-        <form>
+        <form #form="ngForm">
           <div class="form" style="display: flex; flex-direction: column; gap: 16px;">
             <div class="form-group"> 
                 <label for="doctorName">Name</label>
-                <input [(ngModel)]="doctor.name" class="form-control" name="doctorName" id="doctorName" type="text">
+                <input required [(ngModel)]="doctor.name" class="form-control" name="doctorName" id="doctorName" type="text">
+                <small *ngIf="!isFormValid && doctor.name == undefined" class="required-field">*Name is required</small>
             </div>
             <div class="form-group">
                 <label for="specification">Specification</label>
-                 <select class="form-control" name="specification" id="specification" [(ngModel)]="doctor.specificationId">
-                  <option [value]="undefined" hidden selected>Select Specification</option>
+                 <select required class="form-control" name="specification" id="specification" [(ngModel)]="doctor.specificationId">
+                  <!-- <option [value]="undefined" hidden selected>Select Specification</option> -->
                   <option *ngFor="let specification of this.lookupsLists['Specification']" [value]="specification.id">
                     {{specification.name}}
                   </option>
                  </select>
+                <small *ngIf="!isFormValid && doctor.specificationId == undefined" class="required-field">*Specification is required</small>
+
               </div>
               
               <div class="form-group">
                 <label for="location">Location</label>
-                 <select class="form-control" name="location" id="location" [(ngModel)]="doctor.locationId">
+                 <select required class="form-control" name="location" id="location" [(ngModel)]="doctor.locationId">
                   <option [value]="undefined" hidden selected>Select Location</option>
                   <option *ngFor="let location of lookupsLists['Location']" [value]="location.id">
                     {{location.name}}
                   </option>
                  </select>
+                <small *ngIf="!isFormValid && doctor.locationId == undefined" class="required-field">*Location is required</small>
               </div>
             
             <div class="form-group">
               <label for="fromTime">From Time</label>
               <input
+                required
                 id="fromTime"
                 name="fromTime"
                 class="form-control"
                 type="time"
                 [(ngModel)]="fromTime"
               />
+              <small *ngIf="!isFormValid && fromTime == undefined" class="required-field">*From Time is required</small>
           </div>
 
           <div class="form-group">
             <label for="toTime">To Time</label>
             <input
+              required
               id="toTime"
               name="toTime"
               class="form-control"
               type="time"
               [(ngModel)]="toTime"
             />
+            <small *ngIf="!isFormValid && toTime == undefined" class="required-field">To Time is required</small>
         </div>
       </div>
         </form>
@@ -96,7 +104,7 @@
 
     <div class="modal-footer">
       <button (click)="close()" type="button" class="btn btn-secondary"> Close </button>
-      <button (click)="onSave()" type="button" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
+      <button (click)="onSave(form)" type="button" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
     </div>
   </div>
 </ng-template>

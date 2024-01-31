@@ -3,34 +3,36 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {HttpClientModule } from '@angular/common/http';
-import { DoctorPanelComponent } from './doctor-panel/doctor-panel.component';
-import { PatientPanelComponent } from './patient-panel/patient-panel.component';
-import { LookupsPanelComponent } from './lookups-panel/lookups-panel.component';
 import { SideMenuComponent } from './side-menu/side-menu.component';
-import { AppointmentsPanelComponent } from './appointments-panel/appointments-panel.component';
 import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppointmentModule } from './appointment/appointment.module';
+import { DoctorModule } from './doctor/doctor.module';
+import { PatientModule } from './patient/patient.module';
+import { LookupModule } from './lookup/lookup.module';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DoctorPanelComponent,
-    PatientPanelComponent,
-    LookupsPanelComponent,
     SideMenuComponent,
-    AppointmentsPanelComponent,
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     HttpClientModule,
     NgbModule,
     FormsModule,
+    ToastrModule.forRoot(),
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot(), 
+    AppointmentModule,
+    DoctorModule,
+    PatientModule,
+    LookupModule, 
   ],
   exports:[
   ],

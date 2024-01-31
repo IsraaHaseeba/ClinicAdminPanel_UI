@@ -1,9 +1,10 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { Patient } from '../api/models/Patient';
-import { PatientService } from '../api/services/patient.service';
+import { Patient } from '../../api/models/Patient';
+import { PatientService } from '../../api/services/patient.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, map } from 'rxjs';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-patient-panel',
@@ -27,7 +28,8 @@ export class PatientPanelComponent {
   );
   @ViewChild('modal', { read: TemplateRef, static: true }) modal?: TemplateRef<any>;
   modalRef?: any;
-  
+  isFormValid: boolean = true;
+
   constructor(private toastr: ToastrService, private patientService: PatientService, private modalService: NgbModal) {}
 
   ngOnInit(): void {
@@ -62,22 +64,29 @@ export class PatientPanelComponent {
     });
   }
 
-  onSave() {
+  onSave(form: NgForm) {
+    if (form.invalid) {
+      this.isFormValid = false;
+      form.form.markAllAsTouched();
+      return;
+    }
+
     this.addUpdate(this.patient, this.id);
-    this.patient = {};
-    this.id = 0;
     this.close();
   }
   
   close() {
     this.modalRef.close();
-    this.patient = {};
-    this.id = 0;
   }
   
   onAddEdit(id: number | undefined){
     this.id = id;
     this.modalRef = this.modalService.open(this.modal);
+    this.modalRef.result.finally(() => {
+      this.id = 0; 
+      this.patient = {};
+      this.isFormValid = true;
+    });
     this.initializeModal(id);
   }
 

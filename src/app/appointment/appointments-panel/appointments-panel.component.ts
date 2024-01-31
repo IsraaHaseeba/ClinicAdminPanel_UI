@@ -1,13 +1,14 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { Appointment } from '../api/models/Appointment';
-import { AppointmentService } from '../api/services/appointment.service';
+import { Appointment } from '../../api/models/Appointment';
+import { AppointmentService } from '../../api/services/appointment.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, map } from 'rxjs';
-import { Doctor } from '../api/models/Doctor';
-import { Patient } from '../api/models/Patient';
-import { DoctorService } from '../api/services/doctor.service';
-import { PatientService } from '../api/services/patient.service';
+import { Doctor } from '../../api/models/Doctor';
+import { Patient } from '../../api/models/Patient';
+import { DoctorService } from '../../api/services/doctor.service';
+import { PatientService } from '../../api/services/patient.service';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-appointments-panel',
@@ -33,6 +34,7 @@ export class AppointmentsPanelComponent {
   );
   @ViewChild('modal', { read: TemplateRef, static: true }) modal?: TemplateRef<any>;
   modalRef?: any;
+  isFormValid: boolean = true;
 
   constructor(private toastr: ToastrService,  private doctorService: DoctorService,
     private patientService: PatientService, private appointmentService: AppointmentService, private modalService: NgbModal) {}
@@ -77,10 +79,14 @@ export class AppointmentsPanelComponent {
     });
   }
 
-  onSave() {
+  onSave(form: NgForm) {
+    if (form.invalid) {
+      this.isFormValid = false;
+      form.form.markAllAsTouched();
+      return;
+    }
+
     this.addUpdate(this.appointment, this.id);
-    this.appointment = {};
-    this.id = 0;
     this.close();
   }
 
@@ -97,6 +103,11 @@ export class AppointmentsPanelComponent {
   onAddEdit(id: number | undefined){
     this.id = id;
     this.modalRef = this.modalService.open(this.modal);
+    this.modalRef.result.finally(() => {
+      this.id = 0; 
+      this.appointment = {};
+      this.isFormValid = true;
+    });
     this.initializeModal(id);
   }
    

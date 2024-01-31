@@ -46,22 +46,26 @@
     
                 <div class="form-group"> 
                     <label for="ID">Identity Number</label>
-                    <input [(ngModel)]="patient.identityNumber" class="form-control" name="ID" id="ID" type="text">
+                    <input required [(ngModel)]="patient.identityNumber" class="form-control" name="ID" id="ID" type="text">
+                    <small *ngIf="!isFormValid && patient.identityNumber == undefined" class="required-field">*Identity Number is required</small>
                 </div>
     
                 <div class="form-group"> 
                     <label for="patientName">Name</label>
-                    <input [(ngModel)]="patient.name" class="form-control" name="patientName" id="patientName" type="text">
+                    <input required [(ngModel)]="patient.name" class="form-control" name="patientName" id="patientName" type="text">
+                    <small *ngIf="!isFormValid && patient.name == undefined" class="required-field">*Name is required</small>
                 </div>
     
                 <div class="form-group"> 
                     <label for="birthDate">Birth Date</label>
-                    <input [(ngModel)]="patient.birthDate" class="form-control" name="birthDate" id="birthDate" type="date">
+                    <input required [(ngModel)]="patient.birthDate" class="form-control" name="birthDate" id="birthDate" type="date">
+                    <small *ngIf="!isFormValid && patient.birthDate == undefined" class="required-field">*Birth Date is required</small>
                 </div>
     
                 <div class="form-group"> 
                     <label for="address">Address</label>
-                    <input [(ngModel)]="patient.address" class="form-control" name="address" id="address" type="text">
+                    <input required [(ngModel)]="patient.address" class="form-control" name="address" id="address" type="text">
+                    <small *ngIf="!isFormValid && patient.address == undefined" class="required-field">*Address is required</small>
                 </div>
               </div>
             </form>
@@ -69,7 +73,7 @@
     
         <div class="modal-footer">
           <button (click)="close()" type="button" class="btn btn-secondary"> Close </button>
-          <button (click)="onSave()" type="button" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
+          <button (click)="onSave(form)" type="button" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
         </div>
       </div>
 </ng-template>

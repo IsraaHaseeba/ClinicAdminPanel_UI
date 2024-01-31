@@ -44,33 +44,37 @@
               <div class="form" style="display: flex; flex-direction: column; gap: 16px;">
                 <div class="form-group">
                   <label for="dectorSelection">Doctor</label>
-                   <select class="form-control" name="dectorSelection" id="dectorSelection" [(ngModel)]="appointment.doctorId">
+                   <select required class="form-control" name="dectorSelection" id="dectorSelection" [(ngModel)]="appointment.doctorId">
                     <option [value]="undefined" hidden selected>Select Doctor</option>
                     <option *ngFor="let doctor of doctors" [value]="doctor.id">
                       {{doctor.name}}
                     </option>
                    </select>
+                   <small *ngIf="!isFormValid && appointment.doctorId == undefined" class="required-field">*Doctor is required</small>
                 </div>
                 <div class="form-group">
                   <label for="patientSelection">Patient</label>
-                   <select class="form-control" name="patientSelection" id="patientSelection" [(ngModel)]="appointment.patientId">
+                   <select required class="form-control" name="patientSelection" id="patientSelection" [(ngModel)]="appointment.patientId">
                     <option [value]="undefined" hidden selected>Select Patient</option>
                     <option *ngFor="let patient of patients" [value]="patient.id">
                       {{patient.name}}
                     </option>
                    </select>
+                   <small *ngIf="!isFormValid && appointment.patientId == undefined" class="required-field">*Patient is required</small>
                 </div>
                 
                 <div class="form-group">
                   <label for="appointment">Appointment Date and Time</label>
                   <input
+                    required
                     id="appointmentTime"
                     name="appointmentTime"
                     class="form-control"
                     placeholder="yyyy-mm-dd"
                     type="datetime-local"
-                    [(ngModel)]="appointment && appointment.visitTime"
+                    [(ngModel)]="appointment.visitTime"
                   />
+                  <small *ngIf="!isFormValid && appointment.visitTime == undefined" class="required-field">*Appointment date and time are required</small>
               </div>
     
               </div>
@@ -79,7 +83,7 @@
     
         <div class="modal-footer">
           <button (click)="close()" type="button" class="btn btn-secondary"> Close </button>
-          <button (click)="onSave()" type="button" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
+          <button (click)="onSave(form)" type="button" class="btn btn-primary">{{ isAdd ? 'Submit' : 'Save' }}</button>
         </div>
       </div>
 </ng-template>

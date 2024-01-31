@@ -1,11 +1,12 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { Lookup } from '../api/models/Lookup';
-import { LookupService } from '../api/services/lookup.service';
+import { Lookup } from '../../api/models/Lookup';
+import { LookupService } from '../../api/services/lookup.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Category } from '../api/models/Category';
-import { CategoryService } from '../api/services/category.service';
+import { Category } from '../../api/models/Category';
+import { CategoryService } from '../../api/services/category.service';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, map } from 'rxjs';
+import { NgForm } from '@angular/forms';
 
 export enum ModalEntities {Lookup, Category}
 
@@ -47,6 +48,8 @@ export class LookupsPanelComponent {
 
   modalRef?: any;
   modalEntities = ModalEntities;
+  isFormValid: boolean = true;
+  
 
   constructor(
     private toastr: ToastrService,
@@ -102,7 +105,13 @@ export class LookupsPanelComponent {
     }
   }
 
-  onSave(entity: number) {
+  onSave(form: NgForm, entity: number) {
+    if (form.invalid) {
+      this.isFormValid = false;
+      form.form.markAllAsTouched();
+      return;
+    }
+
     if (entity == ModalEntities.Lookup) {
       this.addUpdate(entity, this.lookup, this.lookupId);
       this.close();
@@ -159,6 +168,13 @@ export class LookupsPanelComponent {
       this.modalRef = this.modalService.open(this.categoryModal);
       this.categoryId = id;
     }
+    this.modalRef.result.finally(() => {
+      this.lookupId = 0; 
+      this.categoryId = 0; 
+      this.category = {};
+      this.lookup = {};
+      this.isFormValid = true;
+    });
     this.initializeModal(entity, id);
   }
 

@@ -76,3 +76,12 @@ tr:nth-child(even) {
     border-color: var(--container);
     border-radius: 10px;
 }
+
+input.ng-touched.ng-invalid, select.ng-touched.ng-invalid {
+    border: 1px solid red;
+}
+
+.required-field {
+    color:  red;
+    font-size: small;
+}

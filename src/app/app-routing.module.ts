@@ -1,15 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DoctorPanelComponent } from './doctor-panel/doctor-panel.component';
-import { PatientPanelComponent } from './patient-panel/patient-panel.component';
-import { LookupsPanelComponent } from './lookups-panel/lookups-panel.component';
-import { AppointmentsPanelComponent } from './appointments-panel/appointments-panel.component';
 
 const routes: Routes = [
-  {path: 'doctors', component: DoctorPanelComponent},
-  {path: 'patients', component: PatientPanelComponent},
-  {path: 'lookups', component: LookupsPanelComponent},
-  {path: 'appointments', component: AppointmentsPanelComponent},
+  {path: 'doctors', loadChildren: () => import('./doctor/doctor.module').then(m => m.DoctorModule)},
+  {path: 'patients', loadChildren: () => import('./patient/patient.module').then(m => m.PatientModule)},
+  {path: 'lookups', loadChildren: () => import('./lookup/lookup.module').then(m => m.LookupModule)},
+  {path: 'appointments', loadChildren: () => import('./appointment/appointment.module').then(m => m.AppointmentModule)},
 
 ];
 
